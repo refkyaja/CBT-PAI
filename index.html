@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Ujian PAI - CBT Mode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
+        .font-arabic { font-family: 'Amiri', serif; font-size: 1.75rem; line-height: 2.5rem; text-align: right; direction: rtl; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Animation */
+        .fade-enter { opacity: 0; transform: translateY(10px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.3s ease-out; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Container Error Jika Terjadi Kendala -->
+    <div id="error-container" class="hidden p-8 text-center text-red-600 font-bold bg-white m-4 rounded-xl shadow"></div>
+
+    <!-- SCREEN 1: HOME (Pilih Bab) -->
+    <div id="screen-home" class="flex-grow flex flex-col items-center justify-center p-4">
+        <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Simulasi Ujian PAI</h1>
+            <p class="text-gray-500 mb-8">Pilih bab yang ingin Anda kerjakan. Ujian ini dirancang dengan sistem CBT (Satu soal per halaman).</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="bab-list-container">
+                <!-- Tombol bab akan muncul di sini -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: QUIZ ACTIVE -->
+    <div id="screen-quiz" class="hidden flex-grow flex flex-col h-screen">
+        <!-- Quiz Header -->
+        <header class="bg-emerald-600 text-white shadow-md z-10 sticky top-0">
+            <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold" id="quiz-header-title">Bab</h2>
+                    <p class="text-emerald-100 text-sm" id="quiz-header-progress">Soal - dari -</p>
+                </div>
+                <button onclick="toggleNavModal()" class="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 px-4 py-2 rounded-lg text-sm font-semibold transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                    <span class="hidden sm:inline">Daftar Soal</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Quiz Body -->
+        <main class="flex-grow max-w-3xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col relative">
+            <div id="question-container" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-6 fade-enter flex-grow">
+                <div id="question-text" class="text-lg text-gray-800 leading-relaxed mb-6"></div>
+                <div id="options-container" class="space-y-3"></div>
+            </div>
+
+            <!-- Bottom Navigation Bar -->
+            <div class="bg-white border-t border-gray-200 p-4 rounded-t-2xl sm:rounded-2xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] sm:shadow-sm flex flex-wrap justify-between items-center gap-3 sticky bottom-0 sm:relative">
+                <button id="btn-prev" onclick="prevQuestion()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    <span class="hidden sm:inline">Sebelumnya</span>
+                </button>
+
+                <label class="flex items-center gap-2 cursor-pointer bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 px-4 py-2 rounded-lg transition">
+                    <input type="checkbox" id="checkbox-ragu" onchange="toggleDoubtful()" class="w-4 h-4 text-yellow-500 rounded focus:ring-yellow-400">
+                    <span class="font-medium text-yellow-700 text-sm sm:text-base">Ragu-ragu</span>
+                </label>
+
+                <button id="btn-next" onclick="nextQuestion()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="hidden sm:inline">Selanjutnya</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+        </main>
+
+        <!-- Navigation Grid Modal -->
+        <div id="nav-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[100] hidden flex justify-end">
+            <div class="bg-white w-full max-w-sm h-full flex flex-col shadow-2xl transform translate-x-full transition-transform duration-300" id="nav-modal-content">
+                <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                    <h3 class="font-bold text-gray-800">Navigasi Soal</h3>
+                    <button onclick="toggleNavModal()" class="text-gray-500 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                
+                <div class="p-4 flex-grow overflow-y-auto">
+                    <!-- Legend -->
+                    <div class="flex flex-wrap gap-3 mb-6 text-xs text-gray-600">
+                        <div class="flex items-center gap-1"><div class="w-3 h-3 bg-white border border-gray-300 rounded-sm"></div> Belum</div>
+                        <div class="flex items-center gap-1"><div class="w-3 h-3 bg-emerald-500 rounded-sm"></div> Dijawab</div>
+                        <div class="flex items-center gap-1"><div class="w-3 h-3 bg-yellow-400 rounded-sm"></div> Ragu</div>
+                    </div>
+                    
+                    <!-- Grid -->
+                    <div id="nav-grid" class="grid grid-cols-5 gap-2"></div>
+                </div>
+
+                <div class="p-4 border-t border-gray-200 bg-gray-50">
+                    <button onclick="confirmSubmit()" class="w-full py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-xl transition">
+                        Kumpulkan Ujian
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: RESULT -->
+    <div id="screen-result" class="hidden flex-grow flex flex-col items-center justify-center p-4">
+        <div class="max-w-xl w-full bg-white rounded-2xl shadow-lg p-8 text-center border-t-8 border-emerald-500">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Hasil Ujian</h2>
+            <div class="text-6xl font-black text-emerald-600 mb-4 my-6" id="score-display">100</div>
+            
+            <div class="bg-gray-50 rounded-xl p-4 mb-8 flex justify-center divide-x divide-gray-200">
+                <div class="px-4">
+                    <p class="text-sm text-gray-500">Benar</p>
+                    <p class="text-xl font-bold text-emerald-600" id="stat-benar">0</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-sm text-gray-500">Salah</p>
+                    <p class="text-xl font-bold text-red-500" id="stat-salah">0</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-sm text-gray-500">Kosong</p>
+                    <p class="text-xl font-bold text-gray-500" id="stat-kosong">0</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="showReview()" class="px-6 py-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-semibold rounded-xl transition">
+                    Lihat Kunci Jawaban
+                </button>
+                <button onclick="goHome()" class="px-6 py-3 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl transition">
+                    Kembali ke Beranda
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Menggunakan backticks ` ` untuk mengamankan karakter dan baris baru
+        const quizData = [
+            {
+                id: "bab6", title: "Bab 6",
+                questions: [
+                    {
+                        text: `1. Perhatikan Q.S. Yūnus/10: 40, di bawah ini!<br><br><div class='font-arabic'>َو ِمن ُهم َّمن ُّيؤ ِمن ِبه و ِمنهم من لا يؤ ِمن ِبهۗ وربك…</div><br>Sambungan ayat di atas yang tepat adalah ….`,
+                        options: { "A": `ِم ٓا اع َمل`, "B": `انتم بريۤ ُٔـون`, "C": `اعلم ِبال ُمف ِس ِدين`, "D": `ِما تع َملون`, "E": `وانا بـ ِريۤ ء يء ِما تع َملون` }, answer: "C"
+                    },
+                    {
+                        text: `2. Dalam Q.S. Yūnus/10: 41 ada kalimat <span class='font-arabic text-xl'>فقل ِلي عم ِلي</span><br><br>Terjemahan yang tepat untuk kalimat di atas adalah ….`,
+                        options: { "A": `maka dengarkanlah, "Bagiku pekerjaanku…`, "B": `maka dengarkanlah, Bagimu pekerjaanku…`, "C": `maka katakanlah, "Bagimu pekerjaanku…`, "D": `maka katakanlah, "Bagiku pekerjaanmu…`, "E": `maka katakanlah, "Bagiku pekerjaanku…` }, answer: "E"
+                    },
+                    { text: `3. Diantara isi Q.S. Yūnus/10: 40-41 adalah agar umat Islam mempunyai sikap ….`, options: { "A": `wira'i`, "B": `zuhud`, "C": `qana'ah`, "D": `samhah`, "E": `syaja'ah` }, answer: "D" },
+                    {
+                        text: `4. Perhatikan ayat di bawah ini!<br><br><div class='font-arabic'>﴿واِ ن كذبوك فقل ِلي عم ِلي ولكم عملكمۚانتم ب ِريۤ ُٔـون ِم ٓا اعمل وانا ب ِريۤ ء يء ِما تع َملون﴾</div><br>Dari ayat yang digaris bawahi di atas bacaan tajwid yang benar dan urut adalah….`,
+                        options: { "A": `idzhar syafawi, ikhfa', ghunnah dan mad wajib munfasil`, "B": `ikhfa' syafawi, ikhfa', ghunnah, dan mad jaiz munfasil`, "C": `ikhfa, ikhfa' syafawi, mad jaiz munfasil, dan ghunnah`, "D": `mad wajib muttasil, ghunnah, ikhfa, ikhfa' syafawi`, "E": `ikhfa', idzhar syafawi, ghunnah, dan mad jaiz munfasil` }, answer: "E"
+                    },
+                    { text: `5. Dalam Hadis Nabi Muhammad Saw., dari Abu Hurairah r.a., bahwa al-Thufail bin 'Amr menemui Nabi Muhammad Saw. dan menceritakan bahwa Daus (salah satu kabilah Yaman) telah durhaka dan menolak ajaran dakwahnya, dan meminta agar Nabi mendoakan mereka binasa. Terhadap hal tersebut, respon Nabi Muhammad Saw. Sesuai dengan hadis tersebut adalah ….`, options: { "A": `Nabi berdoa, "Ya Allah berilah azab kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang binasa."`, "B": `Nabi berdoa, "Ya Allah berilah azab kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang kufur."`, "C": `Nabi berdoa, "Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama orang muslim (masuk Islam)."`, "D": `Nabi berdoa, "Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang ahl al-ilmi."`, "E": `Nabi berdoa, "Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama pemimpin yang adil."` }, answer: "C" },
+                    {
+                        text: `6. Perhatikan ayat di bawah ini!<br><br><div class='font-arabic'>من أحياها فكأنما أحيا الناس ج ِميعا</div><br>Terjemahan yang tepat dari ayat di atas adalah ….`,
+                        options: { "A": `Barangsiapa memelihara kehidupan seorang manusia, maka seakan-akan dia telah memelihara kehidupan semua manusia`, "B": `Barangsiapa memelihara kehidupan seorang manusia, maka seakan-akan dia telah memelihara kehidupan banyak manusia`, "C": `Barangsiapa memelihara kehidupan yang ada di bumi, maka seakan-akan dia telah memelihara kehidupan semua makhluk`, "D": `Barangsiapa memelihara kehidupan seluruh makhluk, maka seakan-akan dia telah memelihara kehidupan di alam semesta`, "E": `Barangsiapa memelihara kehidupan banyak manusia, maka seakan-akan dia telah memelihara kehidupan seluruh manusia` }, answer: "A"
+                    },
+                    {
+                        text: `7. Perhatikan Q.S. Al-Maidah/ 5: 32 di bawah ini!<br><br><div class='font-arabic'>ِمن اج ِل ذ ِلكۛ كتبنا على ب ِن ٓي ِاسرا ِۤءيل انه من قتل نفسا ۢ ِبغي ِر نفٍس ا ْو ف َسٍاد ِفى الا ْر ِض فكانما قتل الناس ج ِم ْيعا</div><br>Dari ayat di atas yang digarisbawahi mempunyai bacaan tajwid secara urut adalah ….`,
+                        options: { "A": `idzhar khalqi, qalqalah sughra, ikhfa', ghunnah, dan mad thabi'i`, "B": `idzhar khalqi, qalqalah kubra, ikhfa', ghunnah, dan mad thabi'i`, "C": `idzhar khalqi, qalqalah sughra, ikhfa' syafawi, ghunnah, dan mad thabi'i`, "D": `idzhar khalqi, qalqalah sughra, ikhfa', iqlab, dan mad thabi'i`, "E": `idzhar khalqi, qalqalah sughra, ikhfa', ghunnah, dan mad 'arid` }, answer: "A"
+                    },
+                    { text: `8. Pernyataan di bawah ini yang merupakan penerapan dari Q.S. Al-Maidah/ 5: 32 adalah ….`, options: { "A": `melaksanakan shalat lima waktu di awal waktu`, "B": `melaksanakan shalat tahajud pada sepertiga malam`, "C": `memberikan santunan kepada anak yatim piatu`, "D": `berpuasa sunah setiap hari senin dan kamis`, "E": `membaca al-Quran setiap hari di rumah dan masjid` }, answer: "C" },
+                    { text: `9. Diriwatkan dari 'Abdullah bin 'Amr, dari Nabi Muhammad Saw., beliau bersabda: "Barangsiapa yang membunuh mu'ahid (nonmuslim yang mendapatkan janji jaminan keamanan dari orang muslim) tidak akan dapat mencium harumnya surga, padahal harumnya dapat dicium dari perjalanan ….`, options: { "A": `sepuluh tahun`, "B": `dua puluh tahun`, "C": `tiga puluh tahun`, "D": `empat puluh tahun`, "E": `lima puluh tahun` }, answer: "D" },
+                    { text: `10. Dalam hadis riwayat Muslim, bahwa Nabi Muhammad Saw. menyebutkan bahwa orang yang datang pada hari kiamat membawa shalat, puasa dan zakat. Tetapi di samping itu juga pernah mencaci si ini, menuduh si ini, makan harta si ini, menumpahkan darah si ini, dan memukul si ini. Dalam hadis tersebut disebut dengan orang yang ….`, options: { "A": `al-mukhlis`, "B": `al-muflis`, "C": `al-muhsin`, "D": `al-dzalim`, "E": `al-'ashi` }, answer: "B" }
+                ]
+            },
+            {
+                id: "bab7", title: "Bab 7",
+                questions: [
+                    { text: `1. Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Al-Bukhāri, bahwa maksudnya kekayaan itu adalah ….`, options: { "A": `kekayaan harta`, "B": `kekayaan hati`, "C": `kekayaan pikiran`, "D": `kekayaan materi`, "E": `kekayaan intelektual` }, answer: "B" },
+                    {
+                        text: `2. Perhatikan Q.S. Al-Ahzab/33: 35 di bawah ini!<br><br><div class='font-arabic'>ِان المس ِل ِمين والمس ِلم ِت والمؤ ِم ِنين والمؤ ِمن ِت والق ِن ِتين والق ِنت ِت َوالص ِد ِق ْين َوالص ِدق ِت َوالص ِب ِر ْي َن َوالص ِب ٰر ِت والخ ِش ِعين والخ ِشع ِت والمتص ِد ِقين والمتص ِدق ِت والصاۤى ِِٕمين والصىِٕم ِت والح ِف ِظين فروجهم والح ِفظ ِت والذ ِك ِرين الل ك ِثيرا والذك ٰرت اعَّد الل ل ُهم مغ ِفرة واجرا ع ِظيما</div><br>Dari ayat di atas, merupakan dalil naqli tentang salah satu cabang iman yaitu ….`,
+                        options: { "A": `menjaga kehormatan`, "B": `ikhlas`, "C": `malu`, "D": `zuhud`, "E": `taqarrub` }, answer: "A"
+                    },
+                    { text: `3. Di bawah ini yang merupakan pemahaman yang benar tentang sifat zuhud adalah . . . .`, options: { "A": `tidak boleh memiliki harta karena akan melalaikan kepada Allah`, "B": `mencari harta dengan optimal untuk keluarga mumpung masih hidup`, "C": `mengesampingkan kewajiban kerja dengan selalu beribadah`, "D": `mencari nafkah sepanjang waktu dalam hidup karena waktu adalah uang`, "E": `menjadikan harta dunia untuk mengantarkan kebahagiaan di akhirat` }, answer: "E" },
+                    { text: `4. Meninggalkan kenikmatan duniawi untuk mendapatkan kenikmatan akhirat merupakan salah satu ciri orang yang memiliki sifat zuhud. Namun tidak hanya itu, orang yang memiliki sifat zuhud memiliki ciri lain yaitu . . . .`, options: { "A": `senang mencela dan susah untuk memuji orang lain`, "B": `membenci orang yang memberikan celaan kepadanya`, "C": `marah-marah ketika mendapat pujian orang lain`, "D": `sangat senang akan pujian yang datang dari orang lain`, "E": `bersikap sederhana baik saat dipuji maupun saat dicela` }, answer: "E" },
+                    { text: `5. Di bawah ini merupakan tingkatan ikhlas dengan urut adalah ….`, options: { "A": `awam, khas, dan khawasul khas`, "B": `awam, khawasul khawas, dan khawas`, "C": `awam, khawas, dan khawasul khawas`, "D": `awam, khas, dan khawasul khawas`, "E": `awam, khawas, dan khawasul khas` }, answer: "C" },
+                    { text: `6. Di bawah ini yang termasuk ciri-ciri orang ikhlas adalah ….`, options: { "A": `malas beribadah jika sendirian dan rajin dihadapan banyak orang`, "B": `senantiasa beramal dan bersungguh-sungguh dalam beramal`, "C": `bergairah beribadah ketika dipuji dan tidak bersemangat jika dicela`, "D": `melakukan segala sesuatu yang dilarang oleh Allah Swt.`, "E": `membedakan antara amal yang rewardnya besar dan kecil` }, answer: "B" },
+                    { text: `7. Di bawah ini merupakan manfaat ikhlas adalah ….`, options: { "A": `menambah kekayaan di dunia`, "B": `terhindar dari tipu daya setan`, "C": `menjadi orang yang terkenal`, "D": `mendapatkan pujian dari teman`, "E": `dicari banyak orang untuk dibantu` }, answer: "B" },
+                    { text: `8. Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Al-Tirmidzī bahwa yang termasuk malu kepada Allah dengan sebenarnya adalah ….`, options: { "A": `menjaga seluruh jiwanya dengan mengikutsertakan program asuransi`, "B": `menjaga harta benda yang dimilikinya dengan menabung di Bank Syari'ah`, "C": `menjaga seluruh anggota badan dari perbuatan yang dilarang oleh agama Islam`, "D": `menjaga seluruh keluarga dengan memasang CCTV di dalam dan di luar rumah`, "E": `menjaga lingkungan sekitar dengan melakukan jaga malam secara bergantian` }, answer: "C" },
+                    { text: `9. Perhatikan pernyataan di bawah ini!<br>1) menghindari dari perbuatan maksiat<br>2) menghantarkan hambanya melakukan kebaikan<br>3) mengurangi rezeki<br>4) lebih dekat dengan Allah Swt.<br>5) tidak mendapatkan pekerjaan<br><br>Dari pernyataan di atas, yang termasuk manfaat sikap malu sebagai cabang Iman adalah ….`, options: { "A": `1), 2), dan 3)`, "B": `1), 3), dan 4)`, "C": `2), 3), dan 4)`, "D": `2), 4), dan 1)`, "E": `3), 5), dan 1)` }, answer: "D" },
+                    { text: `10. Malu merupakan tanda baik atau tidaknya iman seseorang. Malu berbeda dengan tidak percaya diri. Oleh karenanya, malu ini harus ditempatkan pada posisi yang tepat. Salah satu penerapan sifat malu yang tepat di bawah ini adalah….`, options: { "A": `malu tidak mengerjakan tugas`, "B": `malu menghadiri pengajian umum`, "C": `malu diejek teman apabila berjilbab`, "D": `malu salat berjama'ah di masjid`, "E": `malu tidak mempunyai HP terbaru` }, answer: "A" }
+                ]
+            },
+            {
+                id: "bab8", title: "Bab 8",
+                questions: [
+                    { text: `1. Adab dari segi bahasa menunjuk kepada sesuatu yang sudah lama dilakukan dan sudah membudaya dalam kehidupan. Dari sini dapat diketahui bahwa makna dari adab adalah kecuali….`, options: { "A": `adat istiadat`, "B": `kebiasaan`, "C": `etika`, "D": `norma`, "E": `kehendak` }, answer: "E" },
+                    {
+                        text: `2. Perhatikan Q.S. Al-Hujurāt/49: 6 dibawah ini!<br><br><div class='font-arabic'>﴿ يايها ال ِذين امنوٓا ِان جاۤءكم ف ِاسقۢ ِبنب ٍا فتبينوٓا ان ت ِصيبوا قوما ِبجهال ٍة فتص ِبحوا على ما فعلتم ن ِد ِمين﴾</div><br>Dari ayat di atas dapat diketahui bahwa apabila seorang yang fasik datang kepadamu membawa suatu berita, maka kalian hendaknya ….`,
+                        options: { "A": `mengamati kebenaran beritanya`, "B": `mengembalikan kembali ke orang tersebut`, "C": `menyerahkan orang lain untuk menerimanya`, "D": `meneliti kebenaran beritanya`, "E": `meneruskan berita tersebut kepada orang lain` }, answer: "D"
+                    },
+                    {
+                        text: `3. Perhatikan hadis Nabi Muhammad Saw. di bawah ini!<br><br><div class='font-arabic'>عن أ ِبي الخي ِر أنه س ِمع عبد الل بن عم ِرو ب ِن الع ِاص يقول سأل رجلا الل َصَّلى الل َع َل ْيه َو َسَّل َم أ ُّي ْال ُم ْسلم ْي َن َخ ْي ٌر َق َال َمن س ِلم المس ِلمون ِمن ِلسا ِن ِه وي ِد ِه</div><br>Dari hadis di atas dapat diketahui bahwa maksud muslim yang paling baik adalah ….`,
+                        options: { "A": `seorang muslim yang keluarganya merasa aman dari gangguan lisan dan tangannya`, "B": `seorang muslim yang orang lain merasa aman dari gangguan lisan dan tangannya`, "C": `seorang muslim yang kelompoknya merasa aman dari gangguan lisan dan tangannya`, "D": `seorang muslim yang temannya merasa aman dari gangguan lisan dan tangannya`, "E": `seorang muslim yang adiknya merasa aman dari gangguan lisan dan tangannya` }, answer: "B"
+                    },
+                    { text: `4. Al-Qur'an memberikan panduan dalam menggunakan media sosial. Diantaranya adalah dalam Q.S. Al-Haj/22: 30. Dalam ayat tersebut, hendaknya kalian mematuhi adab menggunakan media sosial, yaitu ….`, options: { "A": `meneliti fakta atau kebenaran informasi yang diterima`, "B": `menyampaikan informasi tanpa rekayasa atau manipulasi`, "C": `bersikap bijak dalam menerima informasi atau berkomentar`, "D": `berniat yang baik dalam menggunakan media sosial`, "E": `dapat mengambil hikmah dalam menggunakan media sosial` }, answer: "B" },
+                    { text: `5. Dalam mengupdate status atau mengunggah tulisan di media sosial, umat Islam harus mengikuti perintah dalam Al-Qur'an. Diantaranya dalam Q.S. Al-Hujurāt/49: 12. Di bawah ini adalah isi perintahnya, yaitu….`, options: { "A": `menghindari husnudzan, tajassus, dan ghibah`, "B": `melaksanakan husnudzan, tajassus, dan ghibah`, "C": `menghindari su'udzan, tajassus, dan melaksanakan ghibah`, "D": `menghindari su'udzan, dan melaksanakan tajassus, dan ghibah`, "E": `menghindari su'udzan, tajassus, dan ghibah` }, answer: "E" },
+                    { text: `6. Perhatikan pernyataan di bawah ini!<br>1) mengajak kepada orang lain untuk berbuat kebaikan<br>2) memilih teman bermain dari daerahnya sendiri<br>3) menyampaikan argumentasi dengan cara yang baik<br>4) berniat yang baik dalam menggunakan media sosial<br>5) memproduksi konten yang bersifat hate speech<br><br>Dari pernyataan tersebut, yang termasuk adab menggunakan media sosial adalah ….`, options: { "A": `1), 2), dan 3)`, "B": `1), 2), dan 4)`, "C": `2), 3), dan 5)`, "D": `3), 4), dan 5)`, "E": `3), 4), dan 1)` }, answer: "E" },
+                    { text: `7. Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan oleh Tirmidzī disebutkan bahwa maksud sebagian dari kebaikan Islam seseorang adalah ….`, options: { "A": `meninggalkan daerahnya untuk mencari rezeki`, "B": `meninggalkan teman yang berbuat kemaksiatan`, "C": `meninggalkan kemaksiatan menuju ketakwaan`, "D": `meninggalkan sesuatu yang tidak bermanfaat baginya`, "E": `meninggalkan kampungnya untuk menuntut ilmu` }, answer: "D" },
+                    { text: `8. Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Muslim bahwa barangsiapa yang menunjukkan kepada kebaikan, maka ….`, options: { "A": `orang tersebut akan mendapatkan pahala yang lebih besar orang yang menjalankan kebaikan tersebut`, "B": `orang tersebut akan mendapatkan pahala yang sama seperti orang yang menjalankan kebaikan tersebut`, "C": `orang tersebut akan mendapatkan pahala kurang lebih sama dari orang yang menjalankan kebaikan tersebut`, "D": `orang tersebut akan mendapatkan pahala dua kali lipat dari orang yang menjalankan kebaikan tersebut`, "E": `orang tersebut akan mendapatkan pahala tiga kali lipat dari orang yang menjalankan kebaikan tersebut` }, answer: "B" },
+                    { text: `9. Saat ini banyak para ustadz dan artis menggunakan media sosial untuk mengupload kegiatan kajian keislaman. Hal ini menunjukkan bahwa media sosial dapat bermanfaat sebagai ….`, options: { "A": `media pertunjukkan ibadah`, "B": `sarana dalam berdakwah`, "C": `media menunjukkan status`, "D": `perantara datangnya rizki`, "E": `menaikkan popularitas` }, answer: "B" },
+                    { text: `10. Di bawah ini adalah bentuk penerapan adab dalam menggunakan media sosial yang benar, yaitu ….`, options: { "A": `saling menghormati dan menghargai antaranggota dalam satu grup`, "B": `mengirimkan berita di media sosial yang mengandung unsur tajassus`, "C": `menanggapi komentar teman satu daerah saja di media sosial`, "D": `mengajak teman untuk menyebarkan informasi yang belum tahu sumbernya`, "E": `menghindari informasi yang mengajak untuk berbuat baik kepada sesama` }, answer: "A" }
+                ]
+            },
+            {
+                id: "bab9", title: "Bab 9",
+                questions: [
+                    {
+                        text: `1. Perhatikan hadis di bawah ini!<br><br><div class='font-arabic'>يا معشر الشباب َمن استطاع ِمنكم الباءة فليتزوج ف ِإنه أغض ِللبصر وأحصن ِللفرج ومن لم يست ِطع فعلي ِه ِب الصْوم فإن ُه ل ُه و َجاء</div><br>Hadis di atas menjadi dasar penetapan hukum menikah bagi seorang laki-laki. Sesuai hadis tersebut, menikah hukumnya wajib bagi orang yang….`,
+                        options: { "A": `sudah memiliki pekerjaan tetap dan memiliki rumah sendiri serta memiliki tabungan`, "B": `tidak ada alasan untuk menolak ataupun menerima dilakukannya sebuah pernikahan`, "C": `sudah mampu menikah secara lahir batin serta tidak sanggup menghindar dari zina`, "D": `sudah mampu menikah secara lahir batin dan mampu menghindar dari zina`, "E": `sudah memiliki syarat-syarat sesuai dengan peraturan di lingkungan masyarakat` }, answer: "C"
+                    },
+                    { text: `2. Seorang pria dan wanitia pergi melaksanakan umrah ke tanah suci. Diselasela ibadah umrah, sebelum melakukan tahalul, dia melangsungkan pernikahan yang disaksikan oleh dua orang saksi. Dari peristiwa tersebut, hukum pernikahannya adalah ….`, options: { "A": `sunah`, "B": `haram`, "C": `wajib`, "D": `mubah`, "E": `makruh` }, answer: "B" },
+                    { text: `3. Perhatikan pernyataan di bawah ini!<br>1) harta<br>2) status<br>3) jabatan<br>4) agama<br>5) kecantikan/ketampanan<br>6) keturunan<br><br>Dari pernyataan di atas yang termasuk pertimbangan dalam menikah sebagaimana yang dituntunkan oleh Nabi Muhammad Saw. adalah ….`, options: { "A": `1), 2), 3), dan 6)`, "B": `1), 2), 4), dan 6)`, "C": `1), 2), 5), dan 6)`, "D": `4), 5), 6), dan 1)`, "E": `4), 5), 6), dan 2)` }, answer: "D" },
+                    { text: `4. Rukun nikah adalah suatu perkara yang harus dipenuhi dalam pelaksanaan nikah, jika tidak maka nikahnya tidak sah. Rukun nikah itu adalah sebagai berikut, kecuali ….`, options: { "A": `calon suami`, "B": `calon istri`, "C": `ijab kabul`, "D": `dua orang saksi`, "E": `bapak calon istri` }, answer: "E" },
+                    { text: `5. Kewajiban material suami kepada istrinya adalah ….`, options: { "A": `memberi perlindungan keselamatan kepada istrinya`, "B": `memberi kesehatan badan dan rohani istri`, "C": `memberi nafkah istri sesuai kemampuannya`, "D": `memperhatikan keadaan istrinya dan melindungi istri`, "E": `meningkatkan mutu keislaman istrinya` }, answer: "C" },
+                    { text: `6. Di bawah ini yang bukan merupakan tujuan nikah adalah …..`, options: { "A": `supaya hidup manusia tenteram dan bahagia`, "B": `melaksanakan perintah Allah Swt.`, "C": `membina rumah tangga dengan kasih sayang`, "D": `mengikuti sunah Rasulullah Saw.`, "E": `terpenuhinya kebutuhan biologis semata` }, answer: "E" },
+                    { text: `7. Perhatikan daftar di bawah ini!<br>1) Calon suami;<br>2) Calon Istri;<br>3) Mahar;<br>4) Wali;<br>5) 2 orang saksi;<br>6) Walimah<br>7) Ijab qabul<br><br>Dari daftar di atas, yang termasuk rukun menikah ditunjukkan pada nomor ….`, options: { "A": `1), 2), 3), 4), 5)`, "B": `1), 2), 3), 5), 6)`, "C": `1), 2), 3), 6), 7)`, "D": `1), 2), 4), 5), 6)`, "E": `1), 2), 4), 5), 7)` }, answer: "E" },
+                    { text: `8. Batas usia minimal menurut UU No. 16 Tahun 2019 baik laki-laki maupun perempuan adalah …`, options: { "A": `17 tahun`, "B": `18 tahun`, "C": `19 tahun`, "D": `20 tahun`, "E": `21 tahun` }, answer: "C" },
+                    { text: `9. Hukum menikah ditujukan untuk orang yang sudah mampu dari segi lahir dan batin untuk menikah namun masih sanggup mengendalikan dirinya dari godaan yang menjurus kepada perzinaan adalah ….`, options: { "A": `wajib`, "B": `sunah`, "C": `haram`, "D": `mubah`, "E": `makruh` }, answer: "B" },
+                    { text: `10. Di bawah ini yang bukan termasuk hikmah dalam pernikahan adalah ….`, options: { "A": `dapat melaksanakan perintah Allah Swt. dan Rasul-Nya;`, "B": `terbentuknya keluarga bahagia dan saling menyayangi;`, "C": `terhindar dari bahan ejekan dari masyarakat`, "D": `terjalinnya hubungan yang diridhai oleh Allah Swt.`, "E": `mendatangkan pahala dan menjauhkan dari dosa besar` }, answer: "C" }
+                ]
+            },
+            {
+                id: "bab10", title: "Bab 10",
+                questions: [
+                    { text: `1. Ajaran Islam bukan hanya mementingkan soal akhirat, tetapi juga soal dunia. Umat Islam juga harus memperhatikan kehidupan dunia. Pemikiran ini dikemukakan oleh ….`, options: { "A": `Jamaludin al-Afghani`, "B": `Muhammad Rasyid Ridha`, "C": `Muhammad Abduh`, "D": `Sultan Mahmud II`, "E": `Rifa'ah Baidawi R. al-Tahtawi` }, answer: "C" },
+                    { text: `2. Perhatikan tokoh di bawah ini!<br>1) Muhammad Ali Pasya<br>2) Muhammad Abduh<br>3) Rifa'ah Baidawi Rafi'at at-Tahtawi<br>4) KH. Ahmad Dahlan<br>5) KH. Hasyim Asy'ari<br>6) Muhammad Iqbal<br><br>Dari tokoh Islam pada masa modern yang berkiprah di Mesir adalah ….`, options: { "A": `1), 2), dan 3)`, "B": `2), 3), dan 4)`, "C": `3), 4), dan 5)`, "D": `4), 5), dan 6)`, "E": `5), 6), dan 1)` }, answer: "A" },
+                    { text: `3. Menurut Harun Nasution, membagi sejarah Islam ke dalam tiga periode besar. Di antaranya masa tahun 1800 sampai sekarang. Pada masa itu oleh Harun Nasution disebut dengan ….`, options: { "A": `masa klasik`, "B": `masa pertengahan`, "C": `masa transisi`, "D": `masa modern`, "E": `masa kejayaan` }, answer: "D" },
+                    { text: `4. Pintu ijtihad masih terbuka lebar bagi umat Islam. Ijtihad merupakan dasarpenting dalam menafsirkan kembali ajaran Islam. Pemikiran tersebut dikemukakan oleh….`, options: { "A": `Jamaludin al-Afghani dan Sayyid Ahmad Khan`, "B": `Muhammad Rasyid Ridha dan Jamaludin al-Afghani`, "C": `Muhammad Abduh dan Muhammad Iqbal`, "D": `Sultan Mahmud II dan Namik Kemal`, "E": `Rifa'ah Baidawi dan Muhammad Ali Pasya` }, answer: "C" },
+                    { text: `5. Tokoh pembaharu pada abad ke-18 yang mendirikan sekolah Maktebi Ma'aarif dan Maktebi Ulum'i edibiyet dan sekolah kedokteran, militer, dan teknik adalah…`, options: { "A": `Jamaludin al-Afghani`, "B": `Muhammad Rasyid Ridha`, "C": `Muhammad Abduh`, "D": `Sultan Mahmud II`, "E": `Rifa'ah Baidawi` }, answer: "D" },
+                    { text: `6. Perhatikan kitab di bawah ini<br>1) Al-Qadha wa al-Qadar<br>2) Risalah tauhid<br>3) Syarh Nahjil Balaghah<br>4) Ishlahu al-Mahakim al-Syar'iyyah<br>5) Adab al-Alim wa al-Muta'allim<br><br>Dari kitab di atas yang merupakan karya Muhammad Abduh adalah ….<br><br><span class='text-xs text-amber-600 italic'>*Catatan: Jawaban ini masih diperdebatkan (A atau B). Kunci resmi yang digunakan: A.</span>`, options: { "A": `1), 2), dan 3)`, "B": `2), 3), dan 4)`, "C": `3), 4), dan 5)`, "D": `4), 5), dan 1)`, "E": `5), 1), dan 2)` }, answer: "A" },
+                    { text: `7. Di bawah ini adalah tokoh pembaharu yang dikenal dengan bapak pendiri Negara Pakistan adalah ….`, options: { "A": `Jamaludin al-Afghani`, "B": `Muhammad Rasyid Ridha`, "C": `Muhammad Abduh`, "D": `Sultan Mahmud II`, "E": `Muhammad Iqbal` }, answer: "E" },
+                    { text: `8. Di bawah ini adalah pokok-pokok pikiran KH. Ahmad Dahlan adalah kecuali ….`, options: { "A": `fondasi dalam pemerintahan dalam Islam mempunyai tujuan memberi persamaan bagi setiap muslim, melayani kepentingan dengan cara perundingan, dan menjaga keadilan`, "B": `model pendidikan memadukan dua jenis yatu pesantren dan sekolah umum. Dalam pengajarannya menggabungkan antara sistem pengajaran pesantren dan Pendidikan Barat`, "C": `tujuan utama pendidikan Islam adalah membentuk manusia yang berbudi luhur, alim dalam agama, memiliki pandangan luas, dan paham tentang masalah ilmu keduniaan`, "D": `pendidikan harus mencetak manusia-manusia yang berjiwa nasionalisme dan patriotisme, sehingga bersedia berjuang untuk kemajuan masyarakat`, "E": `materi pendidikan harus meliputi: pendidikan moral dan akhlak, pendidikan individu, dan pendidikan kemasyarakatan` }, answer: "A" },
+                    { text: `9. KH. Hasyim Asy'ari adalah sosok yang produktif menulis kitab. Karya beliau yang berisi tentang pentingnya persatuan dan kesatuan di antara sesama umat Islam dalam merespon upaya-upaya yang telah dilakukan Belanda adalah….<br><br><span class='text-xs text-amber-600 italic'>*Catatan: Jawaban ini masih diperdebatkan (D atau B). Kunci resmi yang digunakan: D.</span>`, options: { "A": `Adab al-alim wa al-muta'allim`, "B": `Al-Mawa'idz`, "C": `Al-Nur al-Mubin`, "D": `Al-Tanbihat wa al-wajibat`, "E": `Al-Durar al-Muntatsirah` }, answer: "D" },
+                    { text: `10. Di bawah ini yang bukan merupakan hikmah mempelajari perkembangan Islam pada abad modern, adalah ….`, options: { "A": `mendorong umat Islam untuk menguasai IPTEK`, "B": `mendorong umat Islam untuk menjadi orang kaya`, "C": `mendorong semangat untuk berjuang`, "D": `mendorong umat Islam meraih kemajuan yang hakiki`, "E": `mendorong umat Islam memiliki prinsip hidup yang kuat` }, answer: "B" }
+                ]
+            }
+        ];
+
+        let currentBabIndex = -1;
+        let currentQuestionIndex = 0;
+        let userAnswers = {};   
+        let doubtful = {};      
+        let mode = 'test';      
+
+        // Initialize state arrays
+        quizData.forEach(data => {
+            userAnswers[data.id] = {};
+            doubtful[data.id] = {};
+        });
+
+        // App Start dengan penangkap error
+        document.addEventListener("DOMContentLoaded", () => {
+            try {
+                renderHome();
+            } catch (error) {
+                console.error("Gagal meload:", error);
+                const errBox = document.getElementById('error-container');
+                errBox.classList.remove('hidden');
+                errBox.innerText = `Terjadi kendala memuat aplikasi: ${error.message}`;
+            }
+        });
+
+        function switchScreen(screenId) {
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function renderHome() {
+            const container = document.getElementById('bab-list-container');
+            container.innerHTML = '';
+            
+            quizData.forEach((bab, index) => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 bg-white border-2 border-emerald-100 hover:border-emerald-500 rounded-xl shadow-sm hover:shadow-md transition text-emerald-700 font-bold text-lg w-full";
+                btn.innerText = bab.title;
+                btn.onclick = () => startBab(index);
+                container.appendChild(btn);
+            });
+            switchScreen('screen-home');
+        }
+
+        function startBab(index) {
+            currentBabIndex = index;
+            currentQuestionIndex = 0;
+            const babId = quizData[currentBabIndex].id;
+            
+            userAnswers[babId] = {};
+            doubtful[babId] = {};
+            mode = 'test';
+
+            document.getElementById('quiz-header-title').innerText = quizData[currentBabIndex].title;
+            switchScreen('screen-quiz');
+            renderQuestion();
+            updateNavGrid();
+        }
+
+        function renderQuestion() {
+            const babData = quizData[currentBabIndex];
+            const q = babData.questions[currentQuestionIndex];
+            const babId = babData.id;
+
+            // Trigger animasi transisi
+            const qContainer = document.getElementById('question-container');
+            qContainer.classList.remove('fade-enter');
+            void qContainer.offsetWidth; // force reflow
+            qContainer.classList.add('fade-enter');
+
+            document.getElementById('quiz-header-progress').innerText = `Soal ${currentQuestionIndex + 1} dari ${babData.questions.length}`;
+            document.getElementById('question-text').innerHTML = q.text;
+
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+
+            if (q.options) {
+                for (const [key, value] of Object.entries(q.options)) {
+                    const isSelected = userAnswers[babId][currentQuestionIndex] === key;
+                    const isCorrect = q.answer === key;
+                    
+                    const label = document.createElement('label');
+                    
+                    if (mode === 'review') {
+                        if (isCorrect) {
+                            label.className = "flex items-start p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 cursor-default";
+                        } else if (isSelected && !isCorrect) {
+                            label.className = "flex items-start p-4 rounded-xl border-2 border-red-500 bg-red-50 cursor-default";
+                        } else {
+                            label.className = "flex items-start p-4 rounded-xl border-2 border-gray-100 opacity-60 cursor-default";
+                        }
+                    } else {
+                        label.className = `flex items-start p-4 rounded-xl border-2 cursor-pointer transition ${
+                            isSelected ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:bg-gray-50'
+                        }`;
+                    }
+
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `option_${currentQuestionIndex}`;
+                    input.value = key;
+                    input.className = "mt-1 mr-3 w-4 h-4 text-emerald-600 focus:ring-emerald-500";
+                    if (mode === 'review') input.disabled = true;
+                    if (isSelected) input.checked = true;
+                    
+                    input.onchange = () => {
+                        if (mode === 'test') {
+                            userAnswers[babId][currentQuestionIndex] = key;
+                            renderQuestion();
+                            updateNavGrid();
+                        }
+                    };
+
+                    const spanKey = document.createElement('span');
+                    spanKey.className = `font-bold mr-2 ${mode === 'review' && isCorrect ? 'text-emerald-700' : mode === 'review' && isSelected && !isCorrect ? 'text-red-700' : 'text-gray-700'}`;
+                    spanKey.innerText = `${key}.`;
+
+                    const spanVal = document.createElement('span');
+                    spanVal.className = "text-gray-700 w-full";
+                    spanVal.innerText = value;
+
+                    label.appendChild(input);
+                    label.appendChild(spanKey);
+                    label.appendChild(spanVal);
+
+                    if (mode === 'review') {
+                        const iconDiv = document.createElement('div');
+                        iconDiv.className = "ml-auto pl-2 shrink-0";
+                        if (isCorrect) {
+                            iconDiv.innerHTML = `<svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+                        } else if (isSelected && !isCorrect) {
+                            iconDiv.innerHTML = `<svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+                        }
+                        label.appendChild(iconDiv);
+                    }
+
+                    optsContainer.appendChild(label);
+                }
+            } else {
+                if(mode === 'test') {
+                    userAnswers[babId][currentQuestionIndex] = "AUTO"; 
+                    updateNavGrid();
+                }
+            }
+
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            
+            const checkboxRagu = document.getElementById('checkbox-ragu');
+            checkboxRagu.checked = !!doubtful[babId][currentQuestionIndex];
+            checkboxRagu.disabled = mode === 'review' || !q.options;
+        }
+
+        function nextQuestion() {
+            const babData = quizData[currentBabIndex];
+            if (currentQuestionIndex < babData.questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                if(mode === 'test') { toggleNavModal(); } 
+                else { goHome(); }
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            currentQuestionIndex = idx;
+            renderQuestion();
+            toggleNavModal(); 
+        }
+
+        function toggleDoubtful() {
+            const babId = quizData[currentBabIndex].id;
+            doubtful[babId][currentQuestionIndex] = document.getElementById('checkbox-ragu').checked;
+            updateNavGrid();
+        }
+
+        function updateNavGrid() {
+            const babData = quizData[currentBabIndex];
+            const babId = babData.id;
+            const grid = document.getElementById('nav-grid');
+            grid.innerHTML = '';
+
+            babData.questions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                const isAnswered = userAnswers[babId][idx] !== undefined;
+                const isDoubtful = doubtful[babId][idx];
+                
+                let baseClass = "w-full aspect-square flex items-center justify-center rounded-lg font-bold text-sm transition ";
+                
+                if (isDoubtful) {
+                    baseClass += "bg-yellow-400 text-white shadow-sm ";
+                } else if (isAnswered) {
+                    baseClass += "bg-emerald-500 text-white shadow-sm ";
+                } else {
+                    baseClass += "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 ";
+                }
+
+                if (idx === currentQuestionIndex) {
+                    baseClass += "ring-4 ring-emerald-200 ring-offset-1 ";
+                }
+
+                btn.className = baseClass;
+                btn.innerText = idx + 1;
+                btn.onclick = () => jumpToQuestion(idx);
+                grid.appendChild(btn);
+            });
+        }
+
+        function toggleNavModal() {
+            const modal = document.getElementById('nav-modal');
+            const content = document.getElementById('nav-modal-content');
+            
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { content.classList.remove('translate-x-full'); }, 10);
+            } else {
+                content.classList.add('translate-x-full');
+                setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            }
+        }
+
+        function confirmSubmit() {
+            const babData = quizData[currentBabIndex];
+            const babId = babData.id;
+            
+            let answeredCount = Object.keys(userAnswers[babId]).filter(k => userAnswers[babId][k] !== "AUTO").length;
+            let totalOptions = babData.questions.filter(q => q.options).length;
+            
+            if (answeredCount < totalOptions) {
+                const yes = confirm(`Anda baru menjawab ${answeredCount} dari ${totalOptions} soal pilihan ganda. Yakin ingin mengumpulkan sekarang?`);
+                if (!yes) return;
+            } else {
+                const yes = confirm(`Anda yakin ingin mengumpulkan jawaban?`);
+                if (!yes) return;
+            }
+            
+            toggleNavModal();
+            calculateScore();
+        }
+
+        function calculateScore() {
+            const babData = quizData[currentBabIndex];
+            const babId = babData.id;
+            
+            let benar = 0;
+            let salah = 0;
+            let kosong = 0;
+            let totalGradable = 0;
+
+            babData.questions.forEach((q, index) => {
+                if (q.options !== null) {
+                    totalGradable++;
+                    const ans = userAnswers[babId][index];
+                    if (!ans || ans === "AUTO") {
+                        kosong++;
+                    } else if (ans === q.answer) {
+                        benar++;
+                    } else {
+                        salah++;
+                    }
+                }
+            });
+
+            const score = totalGradable === 0 ? 100 : Math.round((benar / totalGradable) * 100);
+            
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('stat-benar').innerText = benar;
+            document.getElementById('stat-salah').innerText = salah;
+            document.getElementById('stat-kosong').innerText = kosong;
+            
+            const scoreDisplay = document.getElementById('score-display');
+            if(score >= 80) scoreDisplay.className = "text-6xl font-black text-emerald-600 mb-4 my-6";
+            else if(score >= 50) scoreDisplay.className = "text-6xl font-black text-yellow-500 mb-4 my-6";
+            else scoreDisplay.className = "text-6xl font-black text-red-500 mb-4 my-6";
+
+            switchScreen('screen-result');
+        }
+
+        function showReview() {
+            mode = 'review';
+            currentQuestionIndex = 0;
+            switchScreen('screen-quiz');
+            renderQuestion();
+            updateNavGrid();
+            
+            document.querySelector('#nav-modal-content > div:last-child').style.display = 'none';
+        }
+
+        function goHome() {
+            document.querySelector('#nav-modal-content > div:last-child').style.display = 'block';
+            switchScreen('screen-home');
+        }
+    </script>
+</body>
+</html>
