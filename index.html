@@ -29,6 +29,49 @@
         .arabic-text {
             font-family: "Traditional Arabic", "Scheherazade New", serif;
         }
+
+        /* Panel soal overview */
+        .overview-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .overview-panel {
+            background: white;
+            border-radius: 1.5rem 1.5rem 0 0;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 42rem;
+            max-height: 75vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .q-badge {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+        }
+        .q-badge:hover { transform: scale(1.1); }
+        .q-badge.answered  { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .q-badge.doubted   { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        .q-badge.current   { background: #059669; color: white; border-color: #047857; }
+        .q-badge.unanswered{ background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
     </style>
 </head>
 
@@ -97,7 +140,9 @@
                 { question: "Tokoh pembaharu pada abad ke-18 yang mendirikan sekolah Maktebi Ma'aarif dan Maktebi Ulum'i edibiyet dan sekolah kedokteran, militer, dan teknik adalah…", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Rifa'ah Baidawi"], answer: 3 },
                 { question: "Perhatikan kitab di bawah ini\n1) Al-Qadha wa al-Qadar\n2) Risalah tauhid\n3) Syarh Nahjil Balaghah\n4) Ishlahu al-Mahakim al-Syar'iyyah\n5) Adab al-Alim wa al-Muta'allim\n\nDari kitab di atas yang merupakan karya Muhammad Abduh adalah ….", options: ["A. 1), 2), dan 3)", "B. 2), 3), dan 4)", "C. 3), 4), dan 5)", "D. 4), 5), dan 1)", "E. 5), 1), dan 2)"], answer: 0 },
                 { question: "Di bawah ini adalah tokoh pembaharu yang dikenal dengan bapak pendiri Negara Pakistan adalah ….", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Muhammad Iqbal"], answer: 4 },
-                { question: "Di bawah ini adalah pokok-pokok pikiran KH. Ahmad Dahlan adalah kecuali ….", options: ["A. fondasi dalam pemerintahan dalam Islam mempunyai tujuan memberi persamaan bagi setiap muslim, melayani kepentingan dengan cara perundingan, dan menjaga keadilan", "B. model pendidikan memadukan dua jenis yatu pesantren dan sekolah umum. Dalam pengajarannya menggabungkan antara sistem pengajaran pesantren dan Pendidikan Barat", "C. tujuan utama pendidikan Islam adalah membentuk manusia yang berbudi luhur, alim dalam agama, memiliki pandangan luas, dan paham tentang masalah ilmu keduniaan", "D. pendidikan harus mencetak manusia-manusia yang berjiwa nasionalisme dan patriotisme, sehingga bersedia berjuang untuk kemajuan masyarakat", "E. materi pendidikan harus meliputi: pendidikan moral dan akhlak, pendidikan individu, dan pendidikan kemasyarakatan"], answer: 0 }
+                { question: "Di bawah ini adalah pokok-pokok pikiran KH. Ahmad Dahlan adalah kecuali ….", options: ["A. fondasi dalam pemerintahan dalam Islam mempunyai tujuan memberi persamaan bagi setiap muslim, melayani kepentingan dengan cara perundingan, dan menjaga keadilan", "B. model pendidikan memadukan dua jenis yatu pesantren dan sekolah umum. Dalam pengajarannya menggabungkan antara sistem pengajaran pesantren dan Pendidikan Barat", "C. tujuan utama pendidikan Islam adalah membentuk manusia yang berbudi luhur, alim dalam agama, memiliki pandangan luas, dan paham tentang masalah ilmu keduniaan", "D. pendidikan harus mencetak manusia-manusia yang berjiwa nasionalisme dan patriotisme, sehingga bersedia berjuang untuk kemajuan masyarakat", "E. materi pendidikan harus meliputi: pendidikan moral dan akhlak, pendidikan individu, dan pendidikan kemasyarakatan"], answer: 0 },
+                { question: "KH. Hasyim Asy'ari adalah sosok yang produktif menulis kitab. Karya beliau yang berisi tentang pentingnya persatuan dan kesatuan di antara sesama umat Islam dalam merespon upaya-upaya yang telah dilakukan Belanda adalah….", options: ["A. Adab al-alim wa al-muta'allim", "B. Al-Mawa'idz", "C. Al-Nur al-Mubin", "D. Al-Tanbihat wa al-wajibat", "E. Al-Durar al-Muntatsirah"], answer: 3 },
+                { question: "Di bawah ini yang bukan merupakan hikmah mempelajari perkembangan Islam pada abad modern, adalah ….", options: ["A. mendorong umat Islam untuk menguasai IPTEK", "B. mendorong umat Islam untuk menjadi orang kaya", "C. mendorong semangat untuk berjuang", "D. mendorong umat Islam meraih kemajuan yang hakiki", "E. mendorong umat Islam memiliki prinsip hidup yang kuat"], answer: 1 }
             ]
         };
 
@@ -105,6 +150,8 @@
         let currentChapter = null;
         let currentQuestionIndex = 0;
         let userAnswers = {};
+        let doubtedAnswers = {}; // { questionIndex: true/false }
+        let showOverview = false;
 
         // --- SVG ICONS ---
         const icons = {
@@ -115,7 +162,9 @@
             check: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
             cross: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
             award: `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-amber-500"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>`,
-            rotate: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>`
+            rotate: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>`,
+            grid: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>`,
+            doubt: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
         };
 
         // --- LOGIC FORMAT TEKS ARAB ---
@@ -132,6 +181,7 @@
 
         // --- RENDER MENU UTAMA ---
         function renderMenu() {
+            currentChapter = null;
             let chapterListHTML = Object.keys(quizData).map(chapter => `
         <button onclick="startQuiz('${chapter}')" class="group flex items-center justify-between p-4 bg-white border-2 border-slate-100 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all text-left w-full">
             <div>
@@ -169,11 +219,34 @@
             currentChapter = chapter;
             currentQuestionIndex = 0;
             userAnswers = {};
+            doubtedAnswers = {};
+            showOverview = false;
             renderQuestion();
         }
 
         function selectOption(index) {
             userAnswers[currentQuestionIndex] = index;
+            renderQuestion();
+        }
+
+        function toggleDoubt() {
+            doubtedAnswers[currentQuestionIndex] = !doubtedAnswers[currentQuestionIndex];
+            renderQuestion();
+        }
+
+        function jumpToQuestion(index) {
+            currentQuestionIndex = index;
+            showOverview = false;
+            renderQuestion();
+        }
+
+        function openOverview() {
+            showOverview = true;
+            renderQuestion();
+        }
+
+        function closeOverview() {
+            showOverview = false;
             renderQuestion();
         }
 
@@ -195,6 +268,7 @@
             const questions = quizData[currentChapter];
             const q = questions[currentQuestionIndex];
             const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            const isDoubted = doubtedAnswers[currentQuestionIndex];
 
             let optionsHTML = q.options.map((opt, idx) => {
                 const isSelected = userAnswers[currentQuestionIndex] === idx;
@@ -220,25 +294,74 @@
                 ? `<button onclick="renderResult()" class="flex items-center px-6 py-3 rounded-xl font-bold bg-emerald-600 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-colors">Selesai ${icons.check}</button>`
                 : `<button onclick="nextQuestion()" class="flex items-center px-6 py-3 rounded-xl font-semibold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors">Selanjutnya ${icons.chevronRight}</button>`;
 
+            // Overview panel HTML
+            let overviewHTML = '';
+            if (showOverview) {
+                const answeredCount = Object.keys(userAnswers).length;
+                const doubtedCount = Object.values(doubtedAnswers).filter(Boolean).length;
+                const unansweredCount = questions.length - answeredCount;
+
+                let badgesHTML = questions.map((_, idx) => {
+                    let badgeClass = 'unanswered';
+                    if (idx === currentQuestionIndex) badgeClass = 'current';
+                    else if (doubtedAnswers[idx]) badgeClass = 'doubted';
+                    else if (userAnswers[idx] !== undefined) badgeClass = 'answered';
+                    return `<div class="q-badge ${badgeClass}" onclick="jumpToQuestion(${idx})">${idx + 1}</div>`;
+                }).join('');
+
+                overviewHTML = `
+                <div class="overview-overlay" onclick="if(event.target===this)closeOverview()">
+                    <div class="overview-panel">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Semua Soal — ${currentChapter}</h3>
+                            <button onclick="closeOverview()" class="text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="flex flex-wrap gap-3 mb-5 text-xs font-medium">
+                            <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-emerald-200 border border-emerald-400 inline-block"></span>Dijawab (${answeredCount})</span>
+                            <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-amber-200 border border-amber-400 inline-block"></span>Ragu (${doubtedCount})</span>
+                            <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-gray-100 border border-gray-300 inline-block"></span>Belum (${unansweredCount})</span>
+                            <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-emerald-600 inline-block"></span>Sekarang</span>
+                        </div>
+
+                        <!-- Badges grid -->
+                        <div class="flex flex-wrap gap-2 mb-5">
+                            ${badgesHTML}
+                        </div>
+
+                        <button onclick="renderResult()" class="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors">
+                            Selesai & Lihat Hasil
+                        </button>
+                    </div>
+                </div>`;
+            }
+
             document.getElementById('app').innerHTML = `
         <div class="flex flex-col items-center py-6 px-4 min-h-screen">
             <div class="w-full max-w-3xl flex-1 flex flex-col fade-in">
                 <!-- Header -->
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-4">
                     <button onclick="renderMenu()" class="flex items-center text-gray-500 hover:text-emerald-600 font-medium bg-white px-4 py-2 rounded-full shadow-sm border">
                         <span class="mr-2">${icons.home}</span> Keluar
                     </button>
                     <div class="font-bold text-emerald-700 bg-emerald-100 px-4 py-2 rounded-full">
                         ${currentChapter}
                     </div>
-                    <div class="font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm border">
-                        ${currentQuestionIndex + 1} / ${questions.length}
-                    </div>
+                    <!-- Tombol Daftar Soal di Header -->
+                    <button onclick="openOverview()" class="flex items-center gap-2 px-4 py-2 rounded-full font-semibold bg-white text-slate-600 hover:bg-slate-100 transition-colors text-sm shadow-sm border border-slate-200">
+                        ${icons.grid}
+                        <span class="hidden sm:inline">Daftar Soal</span>
+                        <span class="inline sm:hidden">${currentQuestionIndex + 1}/${questions.length}</span>
+                    </button>
                 </div>
 
-                <!-- Progress Bar -->
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-8 overflow-hidden">
-                    <div class="bg-emerald-500 h-2 rounded-full transition-all duration-300 ease-out" style="width: ${progress}%"></div>
+                <!-- Progress Bar + nomor soal -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div class="bg-emerald-500 h-2 rounded-full transition-all duration-300 ease-out" style="width: ${progress}%"></div>
+                    </div>
+                    <span class="text-xs font-medium text-gray-400 whitespace-nowrap">${currentQuestionIndex + 1} / ${questions.length}</span>
                 </div>
 
                 <!-- Question Card -->
@@ -247,16 +370,30 @@
                     <div class="space-y-3">${optionsHTML}</div>
                 </div>
 
-                <!-- Navigation Buttons -->
-                <div class="flex items-center justify-between mt-auto pt-4">
+                <!-- Navigation Buttons (Sebelumnya | Ragu-ragu | Selanjutnya) -->
+                <div class="flex items-center justify-between mt-auto pt-2 gap-2">
                     <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''} 
-                        class="flex items-center px-6 py-3 rounded-xl font-semibold transition-colors ${currentQuestionIndex === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 shadow-sm hover:bg-gray-50 border border-gray-200'}">
-                        <span class="mr-1">${icons.chevronLeft}</span> Sebelumnya
+                        class="flex items-center px-5 py-3 rounded-xl font-semibold transition-colors flex-shrink-0 ${currentQuestionIndex === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 shadow-sm hover:bg-gray-50 border border-gray-200'}">
+                        <span class="mr-1">${icons.chevronLeft}</span> <span class="hidden sm:inline">Sebelumnya</span>
                     </button>
+
+                    <!-- Tombol Ragu-ragu bergaya checkbox pill -->
+                    <button onclick="toggleDoubt()" class="flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2 flex-shrink-0
+                        ${isDoubted
+                            ? 'bg-amber-50 text-amber-700 border-amber-400'
+                            : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-50'}">
+                        <span class="w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
+                            ${isDoubted ? 'bg-amber-400 border-amber-400' : 'border-amber-400 bg-white'}">
+                            ${isDoubted ? '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                        </span>
+                        Ragu-ragu
+                    </button>
+
                     ${nextButtonHTML}
                 </div>
             </div>
         </div>
+        ${overviewHTML}
     `;
         }
 
@@ -268,6 +405,7 @@
             let reviewHTML = questions.map((q, qIndex) => {
                 const isCorrect = userAnswers[qIndex] === q.answer;
                 const isUnanswered = userAnswers[qIndex] === undefined;
+                const isDoubted = doubtedAnswers[qIndex];
 
                 let optionsReviewHTML = q.options.map((opt, oIndex) => {
                     let bgColor = "bg-gray-50 text-gray-600";
@@ -296,6 +434,8 @@
 
                 if (isCorrect) score++;
 
+                const doubtBadge = isDoubted ? `<span class="ml-2 text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full">⚠️ Ragu</span>` : '';
+
                 return `
             <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 ${isCorrect ? 'border-emerald-500' : 'border-red-500'} mb-4 border-t border-r border-b">
                 <div class="flex items-start gap-4">
@@ -303,7 +443,9 @@
                         ${isCorrect ? icons.check : icons.cross}
                     </div>
                     <div class="flex-1">
-                        <div class="font-semibold text-gray-600 mb-2">Soal ${qIndex + 1}</div>
+                        <div class="font-semibold text-gray-600 mb-2 flex items-center">
+                            Soal ${qIndex + 1} ${doubtBadge}
+                        </div>
                         <div class="mb-4">${formatText(q.question)}</div>
                         <div class="mt-4">
                             ${optionsReviewHTML}
