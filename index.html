@@ -4,11 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Ujian PAI Kelas 11</title>
-    <!-- Tailwind CSS untuk Styling -->
+    <title>Aplikasi CBT Kelas 11</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Animasi sederhana */
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -18,19 +16,16 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        /* Font cadangan untuk teks Arab agar lebih rapi */
         .arabic-text {
             font-family: "Traditional Arabic", "Scheherazade New", serif;
         }
 
-        /* Panel soal overview */
         .overview-overlay {
             position: fixed;
             inset: 0;
@@ -77,83 +72,128 @@
 
 <body class="bg-slate-50 min-h-screen text-gray-800 font-sans">
 
-    <div id="app" class="fade-in w-full h-full">
-        <!-- Konten akan di-render di sini oleh JavaScript -->
-    </div>
+    <div id="app" class="fade-in w-full h-full"></div>
 
     <script>
-        // --- DATA KUIS ---
         const quizData = {
-            "Bab 6": [
-                { question: "Perhatikan Q.S. Yūnus/10: 40, di bawah ini!\n\nَو ِمن ُهم َّمن ُّيؤ ِمن ِبه و ِمنهم من لا يؤ ِمن ِبهۗ وربك…\n\nSambungan ayat di atas yang tepat adalah ….", options: ["A. ِم ٓا اع َمل", "B. انتم بريۤ ُٔـون", "C. اعلم ِبال ُمف ِس ِدين", "D. ِما تع َملون", "E. وانا بـ ِريۤ ء يء ِما تع َملون"], answer: 2 },
-                { question: "Dalam Q.S. Yūnus/10: 41 ada kalimat فقل ِلي عم ِلي\n\nTerjemahan yang tepat untuk kalimat di atas adalah ….", options: ["A. maka dengarkanlah, \"Bagiku pekerjaanku…", "B. maka dengarkanlah, Bagimu pekerjaanku…", "C. maka katakanlah, \"Bagimu pekerjaanku…", "D. maka katakanlah, \"Bagiku pekerjaanmu…", "E. maka katakanlah, \"Bagiku pekerjaanku…"], answer: 4 },
-                { question: "Diantara isi Q.S. Yūnus/10: 40-41 adalah agar umat Islam mempunyai sikap ….", options: ["A. wira'i", "B. zuhud", "C. qana'ah", "D. samhah", "E. syaja'ah"], answer: 3 },
-                { question: "Perhatikan ayat di bawah ini!\n\n﴿واِ ن كذبوك فقل ِلي عم ِلي ولكم عملكمۚانتم ب ِريۤ ُٔـون ِم ٓا اعمل وانا ب ِريۤ ء يء ِما تع َملون﴾\n\nDari ayat yang digaris bawahi di atas bacaan tajwid yang benar dan urut adalah….", options: ["A. idzhar syafawi, ikhfa', ghunnah dan mad wajib munfasil", "B. ikhfa' syafawi, ikhfa', ghunnah, dan mad jaiz munfasil", "C. ikhfa, ikhfa' syafawi, mad jaiz munfasil, dan ghunnah", "D. mad wajib muttasil, ghunnah, ikhfa, ikhfa' syafawi", "E. ikhfa', idzhar syafawi, ghunnah, dan mad jaiz munfasil"], answer: 1 },
-                { question: "Dalam Hadis Nabi Muhammad Saw., dari Abu Hurairah r.a., bahwa al-Thufail bin 'Amr menemui Nabi Muhammad Saw. dan menceritakan bahwa Daus (salah satu kabilah Yaman) telah durhaka dan menolak ajaran dakwahnya, dan meminta agar Nabi mendoakan mereka binasa. Terhadap hal tersebut, respon Nabi Muhammad Saw. Sesuai dengan hadis tersebut adalah ….", options: ["A. Nabi berdoa, \"Ya Allah berilah azab kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang binasa.\"", "B. Nabi berdoa, \"Ya Allah berilah azab kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang kufur.\"", "C. Nabi berdoa, \"Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama orang muslim (masuk Islam).\"", "D. Nabi berdoa, \"Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang ahl al-ilmi.\"", "E. Nabi berdoa, \"Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama pemimpin yang adil.\""], answer: 2 },
-                { question: "Perhatikan ayat di bawah ini!\n\nمن أحياها فكأنما أحيا الناس ج ِميعا\n\nTerjemahan yang tepat dari ayat di atas adalah ….", options: ["A. Barangsiapa memelihara kehidupan seorang manusia, maka seakan-akan dia telah memelihara kehidupan semua manusia", "B. Barangsiapa memelihara kehidupan seorang manusia, maka seakan-akan dia telah memelihara kehidupan banyak manusia", "C. Barangsiapa memelihara kehidupan yang ada di bumi, maka seakan-akan dia telah memelihara kehidupan semua makhluk", "D. Barangsiapa memelihara kehidupan seluruh makhluk, maka seakan-akan dia telah memelihara kehidupan di alam semesta", "E. Barangsiapa memelihara kehidupan banyak manusia, maka seakan-akan dia telah memelihara kehidupan seluruh manusia"], answer: 0 },
-                { question: "Perhatikan Q.S. Al-Maidah/ 5: 32 di bawah ini!\n\nِمن اج ِل ذ ِلكۛ كتبنا على ب ِن ٓي ِاسرا ِۤءيل انه من قتل نفسا ۢ ِبغي ِر نفٍس ا ْو ف َسٍاد ِفى الا ْر ِض فكانما قتل الناس ج ِم ْيعا\n\nDari ayat di atas yang digarisbawahi mempunyai bacaan tajwid secara urut adalah ….", options: ["A. idzhar khalqi, qalqalah sughra, ikhfa', ghunnah, dan mad thabi'i", "B. idzhar khalqi, qalqalah kubra, ikhfa', ghunnah, dan mad thabi'i", "C. idzhar khalqi, qalqalah sughra, ikhfa' syafawi, ghunnah, dan mad thabi'i", "D. idzhar khalqi, qalqalah sughra, ikhfa', iqlab, dan mad thabi'i", "E. idzhar khalqi, qalqalah sughra, ikhfa', ghunnah, dan mad 'arid"], answer: 0 },
-                { question: "Pernyataan di bawah ini yang merupakan penerapan dari Q.S. Al-Maidah/ 5: 32 adalah ….", options: ["A. melaksanakan shalat lima waktu di awal waktu", "B. melaksanakan shalat tahajud pada sepertiga malam", "C. memberikan santunan kepada anak yatim piatu", "D. berpuasa sunah setiap hari senin dan kamis", "E. membaca al-Quran setiap hari di rumah dan masjid"], answer: 2 },
-                { question: "Diriwatkan dari 'Abdullah bin 'Amr, dari Nabi Muhammad Saw., beliau bersabda: \"Barangsiapa yang membunuh mu'ahid (nonmuslim yang mendapatkan janji jaminan keamanan dari orang muslim) tidak akan dapat mencium harumnya surga, padahal harumnya dapat dicium dari perjalanan ….", options: ["A. sepuluh tahun", "B. dua puluh tahun", "C. tiga puluh tahun", "D. empat puluh tahun", "E. lima puluh tahun"], answer: 3 },
-                { question: "Dalam hadis riwayat Muslim, bahwa Nabi Muhammad Saw. menyebutkan bahwa orang yang datang pada hari kiamat membawa shalat, puasa dan zakat. Tetapi di samping itu juga pernah mencaci si ini, menuduh si ini, makan harta si ini, menumpahkan darah si ini, dan memukul si ini. Dalam hadis tersebut disebut dengan orang yang ….", options: ["A. al-mukhlis", "B. al-muflis", "C. al-muhsin", "D. al-dzalim", "E. al-'ashi"], answer: 1 }
-            ],
-            "Bab 7": [
-                { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Al-Bukhāri, bahwa maksudnya kekayaan itu adalah ….", options: ["A. kekayaan harta", "B. kekayaan hati", "C. kekayaan pikiran", "D. kekayaan materi", "E. kekayaan intelektual"], answer: 1 },
-                { question: "Perhatikan Q.S. Al-Ahzab/33: 35 di bawah ini!\n\nِان المس ِل ِمين والمس ِلم ِت والمؤ ِم ِنين والمؤ ِمن ِت والق ِن ِتين والق ِنت ِت َوالص ِد ِق ْين َوالص ِدق ِت َوالص ِب ِر ْي َن َوالص ِب ٰر ِت والخ ِش ِعين والخ ِشع ِت والمتص ِد ِقين والمتص ِدق ِت والصاۤى ِِٕمين والصىِٕم ِت والح ِف ِظين فروجهم والح ِفظ ِت والذ ِك ِرين الل ك ِثيرا والذك ٰرت اعَّد الل ل ُهم مغ ِفرة واجرا ع ِظيما\n\nDari ayat di atas, merupakan dalil naqli tentang salah satu cabang iman yaitu ….", options: ["A. menjaga kehormatan", "B. ikhlas", "C. malu", "D. zuhud", "E. taqarrub"], answer: 0 },
-                { question: "Di bawah ini yang merupakan pemahaman yang benar tentang sifat zuhud adalah . . . .", options: ["A. tidak boleh memiliki harta karena akan melalaikan kepada Allah", "B. mencari harta dengan optimal untuk keluarga mumpung masih hidup", "C. mengesampingkan kewajiban kerja dengan selalu beribadah", "D. mencari nafkah sepanjang waktu dalam hidup karena waktu adalah uang", "E. menjadikan harta dunia untuk mengantarkan kebahagiaan di akhirat"], answer: 4 },
-                { question: "Meninggalkan kenikmatan duniawi untuk mendapatkan kenikmatan akhirat merupakan salah satu ciri orang yang memiliki sifat zuhud. Namun tidak hanya itu, orang yang memiliki sifat zuhud memiliki ciri lain yaitu . . . .", options: ["A. senang mencela dan susah untuk memuji orang lain", "B. membenci orang yang memberikan celaan kepadanya", "C. marah-marah ketika mendapat pujian orang lain", "D. sangat senang akan pujian yang datang dari orang lain", "E. bersikap sederhana baik saat dipuji maupun saat dicela"], answer: 4 },
-                { question: "Di bawah ini merupakan tingkatan ikhlas dengan urut adalah ….", options: ["A. awam, khas, dan khawasul khas", "B. awam, khawasul khawas, dan khawas", "C. awam, khawas, dan khawasul khawas", "D. awam, khas, dan khawasul khawas", "E. awam, khawas, dan khawasul khas"], answer: 2 },
-                { question: "Di bawah ini yang termasuk ciri-ciri orang ikhlas adalah ….", options: ["A. malas beribadah jika sendirian dan rajin dihadapan banyak orang", "B. senantiasa beramal dan bersungguh-sungguh dalam beramal", "C. bergairah beribadah ketika dipuji dan tidak bersemangat jika dicela", "D. melakukan segala sesuatu yang dilarang oleh Allah Swt.", "E. membedakan antara amal yang rewardnya besar dan kecil"], answer: 1 },
-                { question: "Di bawah ini merupakan manfaat ikhlas adalah ….", options: ["A. menambah kekayaan di dunia", "B. terhindar dari tipu daya setan", "C. menjadi orang yang terkenal", "D. mendapatkan pujian dari teman", "E. dicari banyak orang untuk dibantu"], answer: 1 },
-                { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Al-Tirmidzī bahwa yang termasuk malu kepada Allah dengan sebenarnya adalah ….", options: ["A. menjaga seluruh jiwanya dengan mengikutsertakan program asuransi", "B. menjaga harta benda yang dimilikinya dengan menabung di Bank Syari'ah", "C. menjaga seluruh anggota badan dari perbuatan yang dilarang oleh agama Islam", "D. menjaga seluruh keluarga dengan memasang CCTV di dalam dan di luar rumah", "E. menjaga lingkungan sekitar dengan melakukan jaga malam secara bergantian"], answer: 2 },
-                { question: "Perhatikan pernyataan di bawah ini!\n1) menghindari dari perbuatan maksiat\n2) menghantarkan hambanya melakukan kebaikan\n3) mengurangi rezeki\n4) lebih dekat dengan Allah Swt.\n5) tidak mendapatkan pekerjaan\n\nDari pernyataan di atas, yang termasuk manfaat sikap malu sebagai cabang Iman adalah ….", options: ["A. 1), 2), dan 3)", "B. 1), 3), dan 4)", "C. 2), 3), dan 4)", "D. 2), 4), dan 1)", "E. 3), 5), dan 1)"], answer: 3 },
-                { question: "Malu merupakan tanda baik atau tidaknya iman seseorang. Malu berbeda dengan tidak percaya diri. Oleh karenanya, malu ini harus ditempatkan pada posisi yang tepat. Salah satu penerapan sifat malu yang tepat di bawah ini adalah….", options: ["A. malu tidak mengerjakan tugas", "B. malu menghadiri pengajian umum", "C. malu diejek teman apabila berjilbab", "D. malu salat berjama'ah di masjid", "E. malu tidak mempunyai HP terbaru"], answer: 0 }
-            ],
-            "Bab 8": [
-                { question: "Adab dari segi bahasa menunjuk kepada sesuatu yang sudah lama dilakukan dan sudah membudaya dalam kehidupan. Dari sini dapat diketahui bahwa makna dari adab adalah kecuali….", options: ["A. adat istiadat", "B. kebiasaan", "C. etika", "D. norma", "E. kehendak"], answer: 4 },
-                { question: "Perhatikan Q.S. Al-Hujurāt/49: 6 dibawah ini!\n\n﴿ يايها ال ِذين امنوٓا ِان جاۤءكم ف ِاسقۢ ِبنب ٍا فتبينوٓا ان ت ِصيبوا قوما ِبجهال ٍة فتص ِبحوا على ما فعلتم ن ِد ِمين﴾\n\nDari ayat di atas dapat diketahui bahwa apabila seorang yang fasik datang kepadamu membawa suatu berita, maka kalian hendaknya ….", options: ["A. mengamati kebenaran beritanya", "B. mengembalikan kembali ke orang tersebut", "C. menyerahkan orang lain untuk menerimanya", "D. meneliti kebenaran beritanya", "E. meneruskan berita tersebut kepada orang lain"], answer: 3 },
-                { question: "Perhatikan hadis Nabi Muhammad Saw. di bawah ini!\n\nعن أ ِبي الخي ِر أنه س ِمع عبد الل بن عم ِرو ب ِن الع ِاص يقول سأل رجلا الل َصَّلى الل َع َل ْيه َو َسَّل َم أ ُّي ْال ُم ْسلم ْي َن َخ ْي ٌر َق َال َمن س ِلم المس ِلمون ِمن ِلسا ِن ِه وي ِد ِه\n\nDari hadis di atas dapat diketahui bahwa maksud muslim yang paling baik adalah ….", options: ["A. seorang muslim yang keluarganya merasa aman dari gangguan lisan dan tangannya", "B. seorang muslim yang orang lain merasa aman dari gangguan lisan dan tangannya", "C. seorang muslim yang kelompoknya merasa aman dari gangguan lisan dan tangannya", "D. seorang muslim yang temannya merasa aman dari gangguan lisan dan tangannya", "E. seorang muslim yang adiknya merasa aman dari gangguan lisan dan tangannya"], answer: 1 },
-                { question: "Al-Qur'an memberikan panduan dalam menggunakan media sosial. Diantaranya adalah dalam Q.S. Al-Haj/22: 30. Dalam ayat tersebut, hendaknya kalian mematuhi adab menggunakan media sosial, yaitu ….", options: ["A. meneliti fakta atau kebenaran informasi yang diterima", "B. menyampaikan informasi tanpa rekayasa atau manipulasi", "C. bersikap bijak dalam menerima informasi atau berkomentar", "D. berniat yang baik dalam menggunakan media sosial", "E. dapat mengambil hikmah dalam menggunakan media sosial"], answer: 1 },
-                { question: "Dalam mengupdate status atau mengunggah tulisan di media sosial, umat Islam harus mengikuti perintah dalam Al-Qur'an. Diantaranya dalam Q.S. Al-Hujurāt/49: 12. Di bawah ini adalah isi perintahnya, yaitu….", options: ["A. menghindari husnudzan, tajassus, dan ghibah", "B. melaksanakan husnudzan, tajassus, dan ghibah", "C. menghindari su'udzan, tajassus, dan melaksanakan ghibah", "D. menghindari su'udzan, dan melaksanakan tajassus, dan ghibah", "E. menghindari su'udzan, tajassus, dan ghibah"], answer: 4 },
-                { question: "Perhatikan pernyataan di bawah ini!\n1) mengajak kepada orang lain untuk berbuat kebaikan\n2) memilih teman bermain dari daerahnya sendiri\n3) menyampaikan argumentasi dengan cara yang baik\n4) berniat yang baik dalam menggunakan media sosial\n5) memproduksi konten yang bersifat hate speech\n\nDari pernyataan tersebut, yang termasuk adab menggunakan media sosial adalah ….", options: ["A. 1), 2), dan 3)", "B. 1), 2), dan 4)", "C. 2), 3), dan 5)", "D. 3), 4), dan 5)", "E. 3), 4), dan 1)"], answer: 4 },
-                { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan oleh Tirmidzī disebutkan bahwa maksud sebagian dari kebaikan Islam seseorang adalah ….", options: ["A. meninggalkan daerahnya untuk mencari rezeki", "B. meninggalkan teman yang berbuat kemaksiatan", "C. meninggalkan kemaksiatan menuju ketakwaan", "D. meninggalkan sesuatu yang tidak bermanfaat baginya", "E. meninggalkan kampungnya untuk menuntut ilmu"], answer: 3 },
-                { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Muslim bahwa barangsiapa yang menunjukkan kepada kebaikan, maka ….", options: ["A. orang tersebut akan mendapatkan pahala yang lebih besar orang yang menjalankan kebaikan tersebut", "B. orang tersebut akan mendapatkan pahala yang sama seperti orang yang menjalankan kebaikan tersebut", "C. orang tersebut akan mendapatkan pahala kurang lebih sama dari orang yang menjalankan kebaikan tersebut", "D. orang tersebut akan mendapatkan pahala dua kali lipat dari orang yang menjalankan kebaikan tersebut", "E. orang tersebut akan mendapatkan pahala tiga kali lipat dari orang yang menjalankan kebaikan tersebut"], answer: 1 },
-                { question: "Saat ini banyak para ustadz dan artis menggunakan media sosial untuk mengupload kegiatan kajian keislaman. Hal ini menunjukkan bahwa media sosial dapat bermanfaat sebagai ….", options: ["A. media pertunjukkan ibadah", "B. sarana dalam berdakwah", "C. media menunjukkan status", "D. perantara datangnya rizki", "E. menaikkan popularitas"], answer: 1 },
-                { question: "Di bawah ini adalah bentuk penerapan adab dalam menggunakan media sosial yang benar, yaitu ….", options: ["A. saling menghormati dan menghargai antaranggota dalam satu grup", "B. mengirimkan berita di media sosial yang mengandung unsur tajassus", "C. menanggapi komentar teman satu daerah saja di media sosial", "D. mengajak teman untuk menyebarkan informasi yang belum tahu sumbernya", "E. menghindari informasi yang mengajak untuk berbuat baik kepada sesama"], answer: 0 }
-            ],
-            "Bab 9": [
-                { question: "Perhatikan hadis di bawah ini!\n\nيا معشر الشباب َمن استطاع ِمنكم الباءة فليتزوج ف ِإنه أغض ِللبصر وأحصن ِللفرج ومن لم يست ِطع فعلي ِه ِب الصْوم فإن ُه ل ُه و َجاء\n\nHadis di atas menjadi dasar penetapan hukum menikah bagi seorang laki-laki. Sesuai hadis tersebut, menikah hukumnya wajib bagi orang yang….", options: ["A. sudah memiliki pekerjaan tetap dan memiliki rumah sendiri serta memiliki tabungan", "B. tidak ada alasan untuk menolak ataupun menerima dilakukannya sebuah pernikahan", "C. sudah mampu menikah secara lahir batin serta tidak sanggup menghindar dari zina", "D. sudah mampu menikah secara lahir batin dan mampu menghindar dari zina", "E. sudah memiliki syarat-syarat sesuai dengan peraturan di lingkungan masyarakat"], answer: 2 },
-                { question: "Seorang pria dan wanitia pergi melaksanakan umrah ke tanah suci. Diselasela ibadah umrah, sebelum melakukan tahalul, dia melangsungkan pernikahan yang disaksikan oleh dua orang saksi. Dari peristiwa tersebut, hukum pernikahannya adalah ….", options: ["A. sunah", "B. haram", "C. wajib", "D. mubah", "E. makruh"], answer: 1 },
-                { question: "Perhatikan pernyataan di bawah ini!\n1) harta\n2) status\n3) jabatan\n4) agama\n5) kecantikan/ketampanan\n6) keturunan\n\nDari pernyataan di atas yang termasuk pertimbangan dalam menikah sebagaimana yang dituntunkan oleh Nabi Muhammad Saw. adalah ….", options: ["A. 1), 2), 3), dan 6)", "B. 1), 2), 4), dan 6)", "C. 1), 2), 5), dan 6)", "D. 4), 5), 6), dan 1)", "E. 4), 5), 6), dan 2)"], answer: 3 },
-                { question: "Rukun nikah adalah suatu perkara yang harus dipenuhi dalam pelaksanaan nikah, jika tidak maka nikahnya tidak sah. Rukun nikah itu adalah sebagai berikut, kecuali ….", options: ["A. calon suami", "B. calon istri", "C. ijab kabul", "D. dua orang saksi", "E. bapak calon istri"], answer: 4 },
-                { question: "Kewajiban material suami kepada istrinya adalah ….", options: ["A. memberi perlindungan keselamatan kepada istrinya", "B. memberi kesehatan badan dan rohani istri", "C. memberi nafkah istri sesuai kemampuannya", "D. memperhatikan keadaan istrinya dan melindungi istri", "E. meningkatkan mutu keislaman istrinya"], answer: 2 },
-                { question: "Di bawah ini yang bukan merupakan tujuan nikah adalah …..", options: ["A. supaya hidup manusia tenteram dan bahagia", "B. melaksanakan perintah Allah Swt.", "C. membina rumah tangga dengan kasih sayang", "D. mengikuti sunah Rasulullah Saw.", "E. terpenuhinya kebutuhan biologis semata"], answer: 4 },
-                { question: "Perhatikan daftar di bawah ini!\n1) Calon suami;\n2) Calon Istri;\n3) Mahar;\n4) Wali;\n5) 2 orang saksi;\n6) Walimah\n7) Ijab qabul\n\nDari daftar di atas, yang termasuk rukun menikah ditunjukkan pada nomor ….", options: ["A. 1), 2), 3), 4), 5)", "B. 1), 2), 3), 5), 6)", "C. 1), 2), 3), 6), 7)", "D. 1), 2), 4), 5), 6)", "E. 1), 2), 4), 5), 7)"], answer: 4 },
-                { question: "Batas usia minimal menurut UU No. 16 Tahun 2019 baik laki-laki maupun perempuan adalah …", options: ["A. 17 tahun", "B. 18 tahun", "C. 19 tahun", "D. 20 tahun", "E. 21 tahun"], answer: 2 },
-                { question: "Hukum menikah ditujukan untuk orang yang sudah mampu dari segi lahir dan batin untuk menikah namun masih sanggup mengendalikan dirinya dari godaan yang menjurus kepada perzinaan adalah ….", options: ["A. wajib", "B. sunah", "C. haram", "D. mubah", "E. makruh"], answer: 1 },
-                { question: "Di bawah ini yang bukan termasuk hikmah dalam pernikahan adalah ….", options: ["A. dapat melaksanakan perintah Allah Swt. dan Rasul-Nya;", "B. terbentuknya keluarga bahagia dan saling menyayangi;", "C. terhindar dari bahan ejekan dari masyarakat", "D. terjalinnya hubungan yang diridhai oleh Allah Swt.", "E. mendatangkan pahala dan menjauhkan dari dosa besar"], answer: 2 }
-            ],
-            "Bab 10": [
-                { question: "Ajaran Islam bukan hanya mementingkan soal akhirat, tetapi juga soal dunia. Umat Islam juga harus memperhatikan kehidupan dunia. Pemikiran ini dikemukakan oleh ….", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Rifa'ah Baidawi R. al-Tahtawi"], answer: 0 },
-                { question: "Perhatikan tokoh di bawah ini!\n1) Muhammad Ali Pasya\n2) Muhammad Abduh\n3) Rifa'ah Baidawi Rafi'at at-Tahtawi\n4) KH. Ahmad Dahlan\n5) KH. Hasyim Asy'ari\n6) Muhammad Iqbal\n\nDari tokoh Islam pada masa modern yang berkiprah di Mesir adalah ….", options: ["A. 1), 2), dan 3)", "B. 2), 3), dan 4)", "C. 3), 4), dan 5)", "D. 4), 5), dan 6)", "E. 5), 6), dan 1)"], answer: 0 },
-                { question: "Menurut Harun Nasution, membagi sejarah Islam ke dalam tiga periode besar. Di antaranya masa tahun 1800 sampai sekarang. Pada masa itu oleh Harun Nasution disebut dengan ….", options: ["A. masa klasik", "B. masa pertengahan", "C. masa transisi", "D. masa modern", "E. masa kejayaan"], answer: 3 },
-                { question: "Pintu ijtihad masih terbuka lebar bagi umat Islam. Ijtihad merupakan dasarpenting dalam menafsirkan kembali ajaran Islam. Pemikiran tersebut dikemukakan oleh….", options: ["A. Jamaludin al-Afghani dan Sayyid Ahmad Khan", "B. Muhammad Rasyid Ridha dan Jamaludin al-Afghani", "C. Muhammad Abduh dan Muhammad Iqbal", "D. Sultan Mahmud II dan Namik Kemal", "E. Rifa'ah Baidawi dan Muhammad Ali Pasya"], answer: 2 },
-                { question: "Tokoh pembaharu pada abad ke-18 yang mendirikan sekolah Maktebi Ma'aarif dan Maktebi Ulum'i edibiyet dan sekolah kedokteran, militer, dan teknik adalah…", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Rifa'ah Baidawi"], answer: 3 },
-                { question: "Perhatikan kitab di bawah ini\n1) Al-Qadha wa al-Qadar\n2) Risalah tauhid\n3) Syarh Nahjil Balaghah\n4) Ishlahu al-Mahakim al-Syar'iyyah\n5) Adab al-Alim wa al-Muta'allim\n\nDari kitab di atas yang merupakan karya Muhammad Abduh adalah ….", options: ["A. 1), 2), dan 3)", "B. 2), 3), dan 4)", "C. 3), 4), dan 5)", "D. 4), 5), dan 1)", "E. 5), 1), dan 2)"], answer: 1 },
-                { question: "Di bawah ini adalah tokoh pembaharu yang dikenal dengan bapak pendiri Negara Pakistan adalah ….", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Muhammad Iqbal"], answer: 4 },
-                { question: "Di bawah ini adalah pokok-pokok pikiran KH. Ahmad Dahlan adalah kecuali ….", options: ["A. fondasi dalam pemerintahan dalam Islam mempunyai tujuan memberi persamaan bagi setiap muslim, melayani kepentingan dengan cara perundingan, dan menjaga keadilan", "B. model pendidikan memadukan dua jenis yatu pesantren dan sekolah umum. Dalam pengajarannya menggabungkan antara sistem pengajaran pesantren dan Pendidikan Barat", "C. tujuan utama pendidikan Islam adalah membentuk manusia yang berbudi luhur, alim dalam agama, memiliki pandangan luas, dan paham tentang masalah ilmu keduniaan", "D. pendidikan harus mencetak manusia-manusia yang berjiwa nasionalisme dan patriotisme, sehingga bersedia berjuang untuk kemajuan masyarakat", "E. materi pendidikan harus meliputi: pendidikan moral dan akhlak, pendidikan individu, dan pendidikan kemasyarakatan"], answer: 0 },
-                { question: "KH. Hasyim Asy'ari adalah sosok yang produktif menulis kitab. Karya beliau yang berisi tentang pentingnya persatuan dan kesatuan di antara sesama umat Islam dalam merespon upaya-upaya yang telah dilakukan Belanda adalah….", options: ["A. Adab al-alim wa al-muta'allim", "B. Al-Mawa'idz", "C. Al-Nur al-Mubin", "D. Al-Tanbihat wa al-wajibat", "E. Al-Durar al-Muntatsirah"], answer: 1 },
-                { question: "Di bawah ini yang bukan merupakan hikmah mempelajari perkembangan Islam pada abad modern, adalah ….", options: ["A. mendorong umat Islam untuk menguasai IPTEK", "B. mendorong umat Islam untuk menjadi orang kaya", "C. mendorong semangat untuk berjuang", "D. mendorong umat Islam meraih kemajuan yang hakiki", "E. mendorong umat Islam memiliki prinsip hidup yang kuat"], answer: 1 }
-            ]
+            "PAI Kelas 11": {
+                "Bab 6": [
+                    { question: "Perhatikan Q.S. Yūnus/10: 40, di bawah ini!\n\nَو ِمن ُهم َّمن ُّيؤ ِمن ِبه و ِمنهم من لا يؤ ِمن ِبهۗ وربك…\n\nSambungan ayat di atas yang tepat adalah ….                                                                                                                                ", options: ["A. ِم ٓا اع َمل", "B. انتم بريۤ ُٔـون", "C. اعلم ِبال ُمف ِس ِدين", "D. ِما تع َملون", "E. وانا بـ ِريۤ ء يء ِما تع َملون"], answer: 2 },
+                    { question: "Dalam Q.S. Yūnus/10: 41 ada kalimat فقل ِلي عم ِلي\n\nTerjemahan yang tepat untuk kalimat di atas adalah ….                                                                                                                              ", options: ["A. maka dengarkanlah, \"Bagiku pekerjaanku…", "B. maka dengarkanlah, Bagimu pekerjaanku…", "C. maka katakanlah, \"Bagimu pekerjaanku…", "D. maka katakanlah, \"Bagiku pekerjaanmu…", "E. maka katakanlah, \"Bagiku pekerjaanku…"], answer: 4 },
+                    { question: "Diantara isi Q.S. Yūnus/10: 40-41 adalah agar umat Islam mempunyai sikap ….                                                                                                                                    ", options: ["A. wira'i", "B. zuhud", "C. qana'ah", "D. samhah", "E. syaja'ah"], answer: 3 },
+                    { question: "Perhatikan ayat di bawah ini!\n\n﴿واِ ن كذبوك فقل ِلي عم ِلي ولكم عملكمۚانتم ب ِريۤ ُٔـون ِم ٓا اعمل وانا ب ِريۤ ء يء ِما تع َملون﴾\n\nDari ayat yang digaris bawahi di atas bacaan tajwid yang benar dan urut adalah….", options: ["A. idzhar syafawi, ikhfa', ghunnah dan mad wajib munfasil", "B. ikhfa' syafawi, ikhfa', ghunnah, dan mad jaiz munfasil", "C. ikhfa, ikhfa' syafawi, mad jaiz munfasil, dan ghunnah", "D. mad wajib muttasil, ghunnah, ikhfa, ikhfa' syafawi", "E. ikhfa', idzhar syafawi, ghunnah, dan mad jaiz munfasil"], answer: 1 },
+                    { question: "Dalam Hadis Nabi Muhammad Saw., dari Abu Hurairah r.a., bahwa al-Thufail bin 'Amr menemui Nabi Muhammad Saw. dan menceritakan bahwa Daus (salah satu kabilah Yaman) telah durhaka dan menolak ajaran dakwahnya, dan meminta agar Nabi mendoakan mereka binasa. Terhadap hal tersebut, respon Nabi Muhammad Saw. Sesuai dengan hadis tersebut adalah ….       ", options: ["A. Nabi berdoa, \"Ya Allah berilah azab kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang binasa.\"", "B. Nabi berdoa, \"Ya Allah berilah azab kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang kufur.\"", "C. Nabi berdoa, \"Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama orang muslim (masuk Islam).\"", "D. Nabi berdoa, \"Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama orang yang ahl al-ilmi.\"", "E. Nabi berdoa, \"Ya Allah berilah petunjuk kepada kabilah Daus dan datangkanlah (mereka) bersama pemimpin yang adil.\""], answer: 2 },
+                    { question: "Perhatikan ayat di bawah ini!\n\nمن أحياها فكأنما أحيا الناس ج ِميعا\n\nTerjemahan yang tepat dari ayat di atas adalah ….                                                                                                                              ", options: ["A. Barangsiapa memelihara kehidupan seorang manusia, maka seakan-akan dia telah memelihara kehidupan semua manusia", "B. Barangsiapa memelihara kehidupan seorang manusia, maka seakan-akan dia telah memelihara kehidupan banyak manusia", "C. Barangsiapa memelihara kehidupan yang ada di bumi, maka seakan-akan dia telah memelihara kehidupan semua makhluk", "D. Barangsiapa memelihara kehidupan seluruh makhluk, maka seakan-akan dia telah memelihara kehidupan di alam semesta", "E. Barangsiapa memelihara kehidupan banyak manusia, maka seakan-akan dia telah memelihara kehidupan seluruh manusia"], answer: 0 },
+                    { question: "Perhatikan Q.S. Al-Maidah/ 5: 32 di bawah ini!\n\nِمن اج ِل ذ ِلكۛ كتبنا على ب ِن ٓي ِاسرا ِۤءيل انه من قتل نفسا ۢ ِبغي ِر نفٍس ا ْو ف َسٍاد ِفى الا ْر ِض فكانما قتل الناس ج ِم ْيعا\n\nDari ayat di atas yang digarisbawahi mempunyai bacaan tajwid secara urut adalah ….   ", options: ["A. idzhar khalqi, qalqalah sughra, ikhfa', ghunnah, dan mad thabi'i", "B. idzhar khalqi, qalqalah kubra, ikhfa', ghunnah, dan mad thabi'i", "C. idzhar khalqi, qalqalah sughra, ikhfa' syafawi, ghunnah, dan mad thabi'i", "D. idzhar khalqi, qalqalah sughra, ikhfa', iqlab, dan mad thabi'i", "E. idzhar khalqi, qalqalah sughra, ikhfa', ghunnah, dan mad 'arid"], answer: 0 },
+                    { question: "Pernyataan di bawah ini yang merupakan penerapan dari Q.S. Al-Maidah/ 5: 32 adalah ….                                                                                                                            ", options: ["A. melaksanakan shalat lima waktu di awal waktu", "B. melaksanakan shalat tahajud pada sepertiga malam", "C. memberikan santunan kepada anak yatim piatu", "D. berpuasa sunah setiap hari senin dan kamis", "E. membaca al-Quran setiap hari di rumah dan masjid"], answer: 2 },
+                    { question: "Diriwatkan dari 'Abdullah bin 'Amr, dari Nabi Muhammad Saw., beliau bersabda: \"Barangsiapa yang membunuh mu'ahid (nonmuslim yang mendapatkan janji jaminan keamanan dari orang muslim) tidak akan dapat mencium harumnya surga, padahal harumnya dapat dicium dari perjalanan ….                                                      ", options: ["A. sepuluh tahun", "B. dua puluh tahun", "C. tiga puluh tahun", "D. empat puluh tahun", "E. lima puluh tahun"], answer: 3 },
+                    { question: "Dalam hadis riwayat Muslim, bahwa Nabi Muhammad Saw. menyebutkan bahwa orang yang datang pada hari kiamat membawa shalat, puasa dan zakat. Tetapi di samping itu juga pernah mencaci si ini, menuduh si ini, makan harta si ini, menumpahkan darah si ini, dan memukul si ini. Dalam hadis tersebut disebut dengan orang yang ….                   ", options: ["A. al-mukhlis", "B. al-muflis", "C. al-muhsin", "D. al-dzalim", "E. al-'ashi"], answer: 1 }
+                ],
+                "Bab 7": [
+                    { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Al-Bukhāri, bahwa maksudnya kekayaan itu adalah ….                                                                                                                             ", options: ["A. kekayaan harta", "B. kekayaan hati", "C. kekayaan pikiran", "D. kekayaan materi", "E. kekayaan intelektual"], answer: 1 },
+                    { question: "Perhatikan Q.S. Al-Ahzab/33: 35 di bawah ini!\n\nِان المس ِل ِمين والمس ِلم ِت والمؤ ِم ِنين والمؤ ِمن ِت والق ِن ِتين والق ِنت ِت َوالص ِد ِق ْين َوالص ِدق ِت َوالص ِب ِر ْي َن َوالص ِب ٰر ِت والخ ِش ِعين والخ ِشع ِت والمتص ِد ِقين والمتص ِدق ِت والصاۤى ِِٕمين والصىِٕم ِت والح ِف ِظين فروجهم والح ِفظ ِت والذ ِك ِرين الل ك ِثيرا والذك ٰرت اعَّد الل ل ُهم مغ ِفرة واجرا ع ِظيما\n\nDari ayat di atas, merupakan dalil naqli tentang salah satu cabang iman yaitu ….   ", options: ["A. menjaga kehormatan", "B. ikhlas", "C. malu", "D. zuhud", "E. taqarrub"], answer: 0 },
+                    { question: "Di bawah ini yang merupakan pemahaman yang benar tentang sifat zuhud adalah . . . .                                                                                                                                      ", options: ["A. tidak boleh memiliki harta karena akan melalaikan kepada Allah", "B. mencari harta dengan optimal untuk keluarga mumpung masih hidup", "C. mengesampingkan kewajiban kerja dengan selalu beribadah", "D. mencari nafkah sepanjang waktu dalam hidup karena waktu adalah uang", "E. menjadikan harta dunia untuk mengantarkan kebahagiaan di akhirat"], answer: 4 },
+                    { question: "Meninggalkan kenikmatan duniawi untuk mendapatkan kenikmatan akhirat merupakan salah satu ciri orang yang memiliki sifat zuhud. Namun tidak hanya itu, orang yang memiliki sifat zuhud memiliki ciri lain yaitu . . . .                                                              ", options: ["A. senang mencela dan susah untuk memuji orang lain", "B. membenci orang yang memberikan celaan kepadanya", "C. marah-marah ketika mendapat pujian orang lain", "D. sangat senang akan pujian yang datang dari orang lain", "E. bersikap sederhana baik saat dipuji maupun saat dicela"], answer: 4 },
+                    { question: "Di bawah ini merupakan tingkatan ikhlas dengan urut adalah ….                                                                                                                                                          ", options: ["A. awam, khas, dan khawasul khas", "B. awam, khawasul khawas, dan khawas", "C. awam, khawas, dan khawasul khawas", "D. awam, khas, dan khawasul khawas", "E. awam, khawas, dan khawasul khas"], answer: 2 },
+                    { question: "Di bawah ini yang termasuk ciri-ciri orang ikhlas adalah ….                                                                                                                                                            ", options: ["A. malas beribadah jika sendirian dan rajin dihadapan banyak orang", "B. senantiasa beramal dan bersungguh-sungguh dalam beramal", "C. bergairah beribadah ketika dipuji dan tidak bersemangat jika dicela", "D. melakukan segala sesuatu yang dilarang oleh Allah Swt.", "E. membedakan antara amal yang rewardnya besar dan kecil"], answer: 1 },
+                    { question: "Di bawah ini merupakan manfaat ikhlas adalah ….                                                                                                                                                                        ", options: ["A. menambah kekayaan di dunia", "B. terhindar dari tipu daya setan", "C. menjadi orang yang terkenal", "D. mendapatkan pujian dari teman", "E. dicari banyak orang untuk dibantu"], answer: 1 },
+                    { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Al-Tirmidzī bahwa yang termasuk malu kepada Allah dengan sebenarnya adalah ….                                                                                             ", options: ["A. menjaga seluruh jiwanya dengan mengikutsertakan program asuransi", "B. menjaga harta benda yang dimilikinya dengan menabung di Bank Syari'ah", "C. menjaga seluruh anggota badan dari perbuatan yang dilarang oleh agama Islam", "D. menjaga seluruh keluarga dengan memasang CCTV di dalam dan di luar rumah", "E. menjaga lingkungan sekitar dengan melakukan jaga malam secara bergantian"], answer: 2 },
+                    { question: "Perhatikan pernyataan di bawah ini!\n1) menghindari dari perbuatan maksiat\n2) menghantarkan hambanya melakukan kebaikan\n3) mengurangi rezeki\n4) lebih dekat dengan Allah Swt.\n5) tidak mendapatkan pekerjaan\n\nDari pernyataan di atas, yang termasuk manfaat sikap malu sebagai cabang Iman adalah ….                                                                       ", options: ["A. 1), 2), dan 3)", "B. 1), 3), dan 4)", "C. 2), 3), dan 4)", "D. 2), 4), dan 1)", "E. 3), 5), dan 1)"], answer: 3 },
+                    { question: "Malu merupakan tanda baik atau tidaknya iman seseorang. Malu berbeda dengan tidak percaya diri. Oleh karenanya, malu ini harus ditempatkan pada posisi yang tepat. Salah satu penerapan sifat malu yang tepat di bawah ini adalah….                                                           ", options: ["A. malu tidak mengerjakan tugas", "B. malu menghadiri pengajian umum", "C. malu diejek teman apabila berjilbab", "D. malu salat berjama'ah di masjid", "E. malu tidak mempunyai HP terbaru"], answer: 0 }
+                ],
+                "Bab 8": [
+                    { question: "Adab dari segi bahasa menunjuk kepada sesuatu yang sudah lama dilakukan dan sudah membudaya dalam kehidupan. Dari sini dapat diketahui bahwa makna dari adab adalah kecuali….                                                                                  ", options: ["A. adat istiadat", "B. kebiasaan", "C. etika", "D. norma", "E. kehendak"], answer: 4 },
+                    { question: "Perhatikan Q.S. Al-Hujurāt/49: 6 dibawah ini!\n\n﴿ يايها ال ِذين امنوٓا ِان جاۤءكم ف ِاسقۢ ِبنب ٍا فتبينوٓا ان ت ِصيبوا قوما ِبجهال ٍة فتص ِبحوا على ما فعلتم ن ِد ِمين﴾\n\nDari ayat di atas dapat diketahui bahwa apabila seorang yang fasik datang kepadamu membawa suatu berita, maka kalian hendaknya ….                        ", options: ["A. mengamati kebenaran beritanya", "B. mengembalikan kembali ke orang tersebut", "C. menyerahkan orang lain untuk menerimanya", "D. meneliti kebenaran beritanya", "E. meneruskan berita tersebut kepada orang lain"], answer: 3 },
+                    { question: "Perhatikan hadis Nabi Muhammad Saw. di bawah ini!\n\nعن أ ِبي الخي ِر أنه س ِمع عبد الل بن عم ِرو ب ِن الع ِاص يقول سأل رجلا الل َصَّلى الل َع َل ْيه َو َسَّل َم أ ُّي ْال ُم ْسلم ْي َن َخ ْي ٌر َق َال َمن س ِلم المس ِلمون ِمن ِلسا ِن ِه وي ِد ِه\n\nDari hadis di atas dapat diketahui bahwa maksud muslim yang paling baik adalah ….            ", options: ["A. seorang muslim yang keluarganya merasa aman dari gangguan lisan dan tangannya", "B. seorang muslim yang orang lain merasa aman dari gangguan lisan dan tangannya", "C. seorang muslim yang kelompoknya merasa aman dari gangguan lisan dan tangannya", "D. seorang muslim yang temannya merasa aman dari gangguan lisan dan tangannya", "E. seorang muslim yang adiknya merasa aman dari gangguan lisan dan tangannya"], answer: 1 },
+                    { question: "Al-Qur'an memberikan panduan dalam menggunakan media sosial. Diantaranya adalah dalam Q.S. Al-Haj/22: 30. Dalam ayat tersebut, hendaknya kalian mematuhi adab menggunakan media sosial, yaitu ….                                                                         ", options: ["A. meneliti fakta atau kebenaran informasi yang diterima", "B. menyampaikan informasi tanpa rekayasa atau manipulasi", "C. bersikap bijak dalam menerima informasi atau berkomentar", "D. berniat yang baik dalam menggunakan media sosial", "E. dapat mengambil hikmah dalam menggunakan media sosial"], answer: 1 },
+                    { question: "Dalam mengupdate status atau mengunggah tulisan di media sosial, umat Islam harus mengikuti perintah dalam Al-Qur'an. Diantaranya dalam Q.S. Al-Hujurāt/49: 12. Di bawah ini adalah isi perintahnya, yaitu….                                                              ", options: ["A. menghindari husnudzan, tajassus, dan ghibah", "B. melaksanakan husnudzan, tajassus, dan ghibah", "C. menghindari su'udzan, tajassus, dan melaksanakan ghibah", "D. menghindari su'udzan, dan melaksanakan tajassus, dan ghibah", "E. menghindari su'udzan, tajassus, dan ghibah"], answer: 4 },
+                    { question: "Perhatikan pernyataan di bawah ini!\n1) mengajak kepada orang lain untuk berbuat kebaikan\n2) memilih teman bermain dari daerahnya sendiri\n3) menyampaikan argumentasi dengan cara yang baik\n4) berniat yang baik dalam menggunakan media sosial\n5) memproduksi konten yang bersifat hate speech\n\nDari pernyataan tersebut, yang termasuk adab menggunakan media sosial adalah ….                                                                                     ", options: ["A. 1), 2), dan 3)", "B. 1), 2), dan 4)", "C. 2), 3), dan 5)", "D. 3), 4), dan 5)", "E. 3), 4), dan 1)"], answer: 4 },
+                    { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan oleh Tirmidzī disebutkan bahwa maksud sebagian dari kebaikan Islam seseorang adalah ….                                                                                                     ", options: ["A. meninggalkan daerahnya untuk mencari rezeki", "B. meninggalkan teman yang berbuat kemaksiatan", "C. meninggalkan kemaksiatan menuju ketakwaan", "D. meninggalkan sesuatu yang tidak bermanfaat baginya", "E. meninggalkan kampungnya untuk menuntut ilmu"], answer: 3 },
+                    { question: "Dalam Hadis Nabi Muhammad Saw. yang diriwayatkan Muslim bahwa barangsiapa yang menunjukkan kepada kebaikan, maka ….                                                                                                                                              ", options: ["A. orang tersebut akan mendapatkan pahala yang lebih besar orang yang menjalankan kebaikan tersebut", "B. orang tersebut akan mendapatkan pahala yang sama seperti orang yang menjalankan kebaikan tersebut", "C. orang tersebut akan mendapatkan pahala kurang lebih sama dari orang yang menjalankan kebaikan tersebut", "D. orang tersebut akan mendapatkan pahala dua kali lipat dari orang yang menjalankan kebaikan tersebut", "E. orang tersebut akan mendapatkan pahala tiga kali lipat dari orang yang menjalankan kebaikan tersebut"], answer: 1 },
+                    { question: "Saat ini banyak para ustadz dan artis menggunakan media sosial untuk mengupload kegiatan kajian keislaman. Hal ini menunjukkan bahwa media sosial dapat bermanfaat sebagai ….                                                                                         ", options: ["A. media pertunjukkan ibadah", "B. sarana dalam berdakwah", "C. media menunjukkan status", "D. perantara datangnya rizki", "E. menaikkan popularitas"], answer: 1 },
+                    { question: "Di bawah ini adalah bentuk penerapan adab dalam menggunakan media sosial yang benar, yaitu ….                                                                                                                                          ", options: ["A. saling menghormati dan menghargai antaranggota dalam satu grup", "B. mengirimkan berita di media sosial yang mengandung unsur tajassus", "C. menanggapi komentar teman satu daerah saja di media sosial", "D. mengajak teman untuk menyebarkan informasi yang belum tahu sumbernya", "E. menghindari informasi yang mengajak untuk berbuat baik kepada sesama"], answer: 0 }
+                ],
+                "Bab 9": [
+                    { question: "Perhatikan hadis di bawah ini!\n\nيا معشر الشباب َمن استطاع ِمنكم الباءة فليتزوج ف ِإنه أغض ِللبصر وأحصن ِللفرج ومن لم يست ِطع فعلي ِه ِب الصْوم فإن ُه ل ُه و َجاء\n\nHadis di atas menjadi dasar penetapan hukum menikah bagi seorang laki-laki. Sesuai hadis tersebut, menikah hukumnya wajib bagi orang yang….                ", options: ["A. sudah memiliki pekerjaan tetap dan memiliki rumah sendiri serta memiliki tabungan", "B. tidak ada alasan untuk menolak ataupun menerima dilakukannya sebuah pernikahan", "C. sudah mampu menikah secara lahir batin serta tidak sanggup menghindar dari zina", "D. sudah mampu menikah secara lahir batin dan mampu menghindar dari zina", "E. sudah memiliki syarat-syarat sesuai dengan peraturan di lingkungan masyarakat"], answer: 2 },
+                    { question: "Seorang pria dan wanitia pergi melaksanakan umrah ke tanah suci. Diselasela ibadah umrah, sebelum melakukan tahalul, dia melangsungkan pernikahan yang disaksikan oleh dua orang saksi. Dari peristiwa tersebut, hukum pernikahannya adalah ….                                                         ", options: ["A. sunah", "B. haram", "C. wajib", "D. mubah", "E. makruh"], answer: 1 },
+                    { question: "Perhatikan pernyataan di bawah ini!\n1) harta\n2) status\n3) jabatan\n4) agama\n5) kecantikan/ketampanan\n6) keturunan\n\nDari pernyataan di atas yang termasuk pertimbangan dalam menikah sebagaimana yang dituntunkan oleh Nabi Muhammad Saw. adalah ….                                                                                         ", options: ["A. 1), 2), 3), dan 6)", "B. 1), 2), 4), dan 6)", "C. 1), 2), 5), dan 6)", "D. 4), 5), 6), dan 1)", "E. 4), 5), 6), dan 2)"], answer: 3 },
+                    { question: "Rukun nikah adalah suatu perkara yang harus dipenuhi dalam pelaksanaan nikah, jika tidak maka nikahnya tidak sah. Rukun nikah itu adalah sebagai berikut, kecuali ….                                                                                      ", options: ["A. calon suami", "B. calon istri", "C. ijab kabul", "D. dua orang saksi", "E. bapak calon istri"], answer: 4 },
+                    { question: "Kewajiban material suami kepada istrinya adalah ….                                                                                                                                                                            ", options: ["A. memberi perlindungan keselamatan kepada istrinya", "B. memberi kesehatan badan dan rohani istri", "C. memberi nafkah istri sesuai kemampuannya", "D. memperhatikan keadaan istrinya dan melindungi istri", "E. meningkatkan mutu keislaman istrinya"], answer: 2 },
+                    { question: "Di bawah ini yang bukan merupakan tujuan nikah adalah …..                                                                                                                                                                      ", options: ["A. supaya hidup manusia tenteram dan bahagia", "B. melaksanakan perintah Allah Swt.", "C. membina rumah tangga dengan kasih sayang", "D. mengikuti sunah Rasulullah Saw.", "E. terpenuhinya kebutuhan biologis semata"], answer: 4 },
+                    { question: "Perhatikan daftar di bawah ini!\n1) Calon suami;\n2) Calon Istri;\n3) Mahar;\n4) Wali;\n5) 2 orang saksi;\n6) Walimah\n7) Ijab qabul\n\nDari daftar di atas, yang termasuk rukun menikah ditunjukkan pada nomor ….                                                                                         ", options: ["A. 1), 2), 3), 4), 5)", "B. 1), 2), 3), 5), 6)", "C. 1), 2), 3), 6), 7)", "D. 1), 2), 4), 5), 6)", "E. 1), 2), 4), 5), 7)"], answer: 4 },
+                    { question: "Batas usia minimal menurut UU No. 16 Tahun 2019 baik laki-laki maupun perempuan adalah ….                                                                                                                                      ", options: ["A. 17 tahun", "B. 18 tahun", "C. 19 tahun", "D. 20 tahun", "E. 21 tahun"], answer: 2 },
+                    { question: "Hukum menikah ditujukan untuk orang yang sudah mampu dari segi lahir dan batin untuk menikah namun masih sanggup mengendalikan dirinya dari godaan yang menjurus kepada perzinaan adalah ….                                                                         ", options: ["A. wajib", "B. sunah", "C. haram", "D. mubah", "E. makruh"], answer: 1 },
+                    { question: "Di bawah ini yang bukan termasuk hikmah dalam pernikahan adalah ….                                                                                                                                                            ", options: ["A. dapat melaksanakan perintah Allah Swt. dan Rasul-Nya;", "B. terbentuknya keluarga bahagia dan saling menyayangi;", "C. terhindar dari bahan ejekan dari masyarakat", "D. terjalinnya hubungan yang diridhai oleh Allah Swt.", "E. mendatangkan pahala dan menjauhkan dari dosa besar"], answer: 2 }
+                ],
+                "Bab 10": [
+                    { question: "Ajaran Islam bukan hanya mementingkan soal akhirat, tetapi juga soal dunia. Umat Islam juga harus memperhatikan kehidupan dunia. Pemikiran ini dikemukakan oleh ….                                                                                        ", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Rifa'ah Baidawi R. al-Tahtawi"], answer: 0 },
+                    { question: "Perhatikan tokoh di bawah ini!\n1) Muhammad Ali Pasya\n2) Muhammad Abduh\n3) Rifa'ah Baidawi Rafi'at at-Tahtawi\n4) KH. Ahmad Dahlan\n5) KH. Hasyim Asy'ari\n6) Muhammad Iqbal\n\nDari tokoh Islam pada masa modern yang berkiprah di Mesir adalah ….                                                                                            ", options: ["A. 1), 2), dan 3)", "B. 2), 3), dan 4)", "C. 3), 4), dan 5)", "D. 4), 5), dan 6)", "E. 5), 6), dan 1)"], answer: 0 },
+                    { question: "Menurut Harun Nasution, membagi sejarah Islam ke dalam tiga periode besar. Di antaranya masa tahun 1800 sampai sekarang. Pada masa itu oleh Harun Nasution disebut dengan ….                                                                                      ", options: ["A. masa klasik", "B. masa pertengahan", "C. masa transisi", "D. masa modern", "E. masa kejayaan"], answer: 3 },
+                    { question: "Pintu ijtihad masih terbuka lebar bagi umat Islam. Ijtihad merupakan dasarpenting dalam menafsirkan kembali ajaran Islam. Pemikiran tersebut dikemukakan oleh….                                                                                                ", options: ["A. Jamaludin al-Afghani dan Sayyid Ahmad Khan", "B. Muhammad Rasyid Ridha dan Jamaludin al-Afghani", "C. Muhammad Abduh dan Muhammad Iqbal", "D. Sultan Mahmud II dan Namik Kemal", "E. Rifa'ah Baidawi dan Muhammad Ali Pasya"], answer: 2 },
+                    { question: "Tokoh pembaharu pada abad ke-18 yang mendirikan sekolah Maktebi Ma'aarif dan Maktebi Ulum'i edibiyet dan sekolah kedokteran, militer, dan teknik adalah…                                                                                                         ", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Rifa'ah Baidawi"], answer: 3 },
+                    { question: "Perhatikan kitab di bawah ini\n1) Al-Qadha wa al-Qadar\n2) Risalah tauhid\n3) Syarh Nahjil Balaghah\n4) Ishlahu al-Mahakim al-Syar'iyyah\n5) Adab al-Alim wa al-Muta'allim\n\nDari kitab di atas yang merupakan karya Muhammad Abduh adalah ….                                                                                            ", options: ["A. 1), 2), dan 3)", "B. 2), 3), dan 4)", "C. 3), 4), dan 5)", "D. 4), 5), dan 1)", "E. 5), 1), dan 2)"], answer: 1 },
+                    { question: "Di bawah ini adalah tokoh pembaharu yang dikenal dengan bapak pendiri Negara Pakistan adalah ….                                                                                                                                  ", options: ["A. Jamaludin al-Afghani", "B. Muhammad Rasyid Ridha", "C. Muhammad Abduh", "D. Sultan Mahmud II", "E. Muhammad Iqbal"], answer: 4 },
+                    { question: "Di bawah ini adalah pokok-pokok pikiran KH. Ahmad Dahlan adalah kecuali ….                                                                                                                                                    ", options: ["A. fondasi dalam pemerintahan dalam Islam mempunyai tujuan memberi persamaan bagi setiap muslim, melayani kepentingan dengan cara perundingan, dan menjaga keadilan", "B. model pendidikan memadukan dua jenis yatu pesantren dan sekolah umum. Dalam pengajarannya menggabungkan antara sistem pengajaran pesantren dan Pendidikan Barat", "C. tujuan utama pendidikan Islam adalah membentuk manusia yang berbudi luhur, alim dalam agama, memiliki pandangan luas, dan paham tentang masalah ilmu keduniaan", "D. pendidikan harus mencetak manusia-manusia yang berjiwa nasionalisme dan patriotisme, sehingga bersedia berjuang untuk kemajuan masyarakat", "E. materi pendidikan harus meliputi: pendidikan moral dan akhlak, pendidikan individu, dan pendidikan kemasyarakatan"], answer: 0 },
+                    { question: "KH. Hasyim Asy'ari adalah sosok yang produktif menulis kitab. Karya beliau yang berisi tentang pentingnya persatuan dan kesatuan di antara sesama umat Islam dalam merespon upaya-upaya yang telah dilakukan Belanda adalah….                                                                             ", options: ["A. Adab al-alim wa al-muta'allim", "B. Al-Mawa'idz", "C. Al-Nur al-Mubin", "D. Al-Tanbihat wa al-wajibat", "E. Al-Durar al-Muntatsirah"], answer: 1 },
+                    { question: "Di bawah ini yang bukan merupakan hikmah mempelajari perkembangan Islam pada abad modern, adalah ….                                                                                                                            ", options: ["A. mendorong umat Islam untuk menguasai IPTEK", "B. mendorong umat Islam untuk menjadi orang kaya", "C. mendorong semangat untuk berjuang", "D. mendorong umat Islam meraih kemajuan yang hakiki", "E. mendorong umat Islam memiliki prinsip hidup yang kuat"], answer: 1 }
+                ]
+            },
+            "Bahasa Indonesia XI": {
+                "Teks Multimodal": [
+                    { question: "Teks multimodal adalah teks yang menggunakan lebih dari satu mode komunikasi. Manakah di bawah ini yang BUKAN merupakan contoh teks multimodal?", options: ["A. Infografis kesehatan", "B. Video pembelajaran dengan narasi dan musik", "C. Poster kampanye sosial", "D. Novel tanpa ilustrasi", "E. Presentasi PowerPoint"], answer: 3 },
+                    { question: "Berikut adalah unsur-unsur multimodal, kecuali...", options: ["A. Unsur linguistik", "B. Unsur visual", "C. Unsur audio", "D. Unsur metodologis", "E. Unsur spasial"], answer: 3 },
+                    { question: "Fungsi dari unsur warna dalam sebuah poster multimodal adalah...", options: ["A. Memberikan informasi saja", "B. Memperjelas pesan dan membangun emosi", "C. Hanya untuk hiasan", "D. Menunjukkan tanggal", "E. Untuk menghemat kertas"], answer: 1 },
+                    { question: "Unsur yang menunjukkan gerakan tubuh atau ekspresi wajah dalam komunikasi multimodal adalah unsur...", options: ["A. Linguistik", "B. Visual", "C. Audio", "D. Gestural", "E. Spasial"], answer: 3 },
+                    { question: "Cara menganalisis teks multimodal yang benar adalah...", options: ["A. Hanya fokus pada tulisannya saja", "B. Tentukan tujuan, identifikasi unsur, jelaskan fungsi setiap unsur", "C. Lihat warnanya saja", "D. Dengarkan audionya saja", "E. Hitung jumlah gambar"], answer: 1 }
+                ],
+                "Karya Ilmiah": [
+                    { question: "Ciri-ciri karya ilmiah adalah berikut, KECUALI...", options: ["A. Objektif", "B. Berdasarkan fakta dan penelitian", "C. Menggunakan bahasa baku", "D. Sistematis dan logis", "E. Menggunakan bahasa puitis dan kias"], answer: 4 },
+                    { question: "Bagian karya ilmiah yang menerangkan teori-teori yang mendukung penelitian adalah...", options: ["A. BAB I Pendahuluan", "B. BAB II Kajian Teori", "C. BAB III Metode Penelitian", "D. BAB IV Hasil dan Pembahasan", "E. BAB V Penutup"], answer: 1 },
+                    { question: "Perbedaan utama antara fakta dan opini dalam karya ilmiah adalah...", options: ["A. Fakta lebih mudah diingat", "B. Fakta dapat dibuktikan, opini adalah pendapat pribadi", "C. Opini selalu benar", "D. Keduanya tidak penting", "E. Fakta lebih panjang"], answer: 1 },
+                    { question: "Bagian yang menjelaskan alasan penelitian dilakukan pada karya ilmiah adalah...", options: ["A. Rumusan Masalah", "B. Latar Belakang", "C. Tujuan Penelitian", "D. Manfaat Penelitian", "E. Metode Penelitian"], answer: 1 },
+                    { question: "Ciri bahasa karya ilmiah yang TIDAK objektif adalah...", options: ["A. Menurut saya, sekolah ini paling bersih", "B. Berdasarkan hasil observasi, nilai kebersihan 90%", "C. Data menunjukkan peningkatan 25%", "D. Penelitian membuktikan hipotesis awal", "E. Hasil survei menyatakan bahwa..."], answer: 0 },
+                    { question: "Metode pengumpulan data yang termasuk dalam karya ilmiah adalah...", options: ["A. Hanya wawancara", "B. Hanya observasi dan angket", "C. Observasi, wawancara, dan angket", "D. Hanya membaca buku", "E. Menonton film"], answer: 2 },
+                    { question: "BAB yang berisi kesimpulan dan saran dalam karya ilmiah adalah...", options: ["A. BAB I", "B. BAB II", "C. BAB III", "D. BAB IV", "E. BAB V"], answer: 4 }
+                ],
+                "Proposal": [
+                    { question: "Proposal adalah...", options: ["A. Laporan hasil kegiatan yang sudah selesai", "B. Rencana kegiatan yang dibuat sebelum dilaksanakan", "C. Daftar nama peserta kegiatan", "D. Bukti pembayaran kegiatan", "E. Surat undangan kegiatan"], answer: 1 },
+                    { question: "Tujuan proposal adalah...", options: ["A. Melaporkan hasil kegiatan", "B. Menghibur pembaca", "C. Meminta izin, mencari dukungan, dan mengajukan dana", "D. Memberikan hiburan", "E. Hanya untuk arsip"], answer: 2 },
+                    { question: "Struktur proposal kegiatan yang berisikan alasan kegiatan adalah...", options: ["A. Judul", "B. Latar Belakang", "C. Tujuan", "D. Waktu dan Tempat", "E. Anggaran Dana"], answer: 1 },
+                    { question: "Bagian proposal yang merincikan biaya kegiatan disebut...", options: ["A. Judul", "B. Tujuan", "C. Anggaran Dana", "D. Waktu dan Tempat", "E. Susunan Panitia"], answer: 2 },
+                    { question: "Perbedaan proposal kegiatan dan proposal penelitian adalah...", options: ["A. Tidak ada perbedaan", "B. Proposal kegiatan merencanakan kegiatan, proposal penelitian merencanakan penelitian", "C. Proposal kegiatan lebih panjang", "D. Proposal penelitian hanya untuk anak SMA", "E. Keduanya sama-sama laporan"], answer: 1 },
+                    { question: "Bagian penutup pada proposal berfungsi untuk...", options: ["A. Menjelaskan tujuan", "B. Merincikan biaya", "C. Mengharapkan persetujuan dari pihak berwenang", "D. Menjelaskan latar belakang", "E. Menentukan waktu"], answer: 2 }
+                ],
+                "Puisi": [
+                    { question: "Amanat dalam sebuah puisi adalah...", options: ["A. Tema atau topik puisi", "B. Perasaan penyair", "C. Pesan moral yang ingin disampaikan", "D. Gaya bahasa yang digunakan", "E. Jumlah bait"], answer: 2 },
+                    { question: "Berikut yang termasuk unsur fisik puisi adalah...", options: ["A. Tema dan rasa", "B. Nada dan amanat", "C. Diksi, imaji, dan majas", "D. Latar belakang penyair", "E. Waktu penulisan"], answer: 2 },
+                    { question: "\"Angin berbisik di telingaku\" merupakan contoh majas...", options: ["A. Simile", "B. Metafora", "C. Personifikasi", "D. Hiperbola", "E. Aliterasi"], answer: 2 },
+                    { question: "Majas yang membandingkan dua hal dengan menggunakan kata \"seperti\" adalah...", options: ["A. Metafora", "B. Simile", "C. Personifikasi", "D. Hiperbola", "E. Metonimia"], answer: 1 },
+                    { question: "Unsur batin puisi yang menunjukkan sikap penyair terhadap pembaca adalah...", options: ["A. Tema", "B. Rasa", "C. Nada", "D. Amanat", "E. Diksi"], answer: 2 },
+                    { question: "Langkah pertama dalam menganalisis puisi adalah...", options: ["A. Mencari majas", "B. Mencari tema", "C. Menghitung bait", "D. Melihat tipografi", "E. Membaca judul"], answer: 1 }
+                ],
+                "Drama, Berita & Iklan": [
+                    { question: "Dalam drama, bagian yang menjelaskan latar belakang peristiwa di awal cerita disebut...", options: ["A. Dialog", "B. Prolog", "C. Epilog", "D. Monolog", "E. Narasi"], answer: 1 },
+                    { question: "Unsur intrinsik drama yang menunjukkan pertentangan antara tokoh-tokoh adalah...", options: ["A. Tema", "B. Alur", "C. Karakter", "D. Konflik", "E. Latar"], answer: 3 },
+                    { question: "Berita langsung (straight news) adalah...", options: ["A. Berita yang mengandung analisis mendalam", "B. Berita yang berisi pendapat wartawan", "C. Berita yang menyajikan informasi secara langsung dan singkat", "D. Berita hasil penyelidikan", "E. Berita yang mengandung kritik"], answer: 2 },
+                    { question: "Jenis berita yang berisi penyelidikan mendalam tentang suatu peristiwa disebut berita...", options: ["A. Langsung", "B. Mendalam", "C. Opini", "D. Investigasi", "E. Laporan"], answer: 3 },
+                    { question: "AIDA dalam strategi iklan adalah...", options: ["A. Attention, Income, Design, Advertisement", "B. Attention, Interest, Desire, Action", "C. Article, Image, Design, Audio", "D. Advertising, Information, Delivery, Analysis", "E. Attention, Innovation, Development, Application"], answer: 1 },
+                    { question: "Kebahasaan dalam iklan yang efektif biasanya menggunakan...", options: ["A. Kalimat pasif yang panjang", "B. Bahasa ilmiah yang rumit", "C. Bahasa yang singkat, padat, dan menarik", "D. Bahasa arkais", "E. Bahasa daerah"], answer: 2 }
+                ]
+            }
         };
 
-        // --- STATE MANAGEMENT ---
+        let currentSubject = null;
         let currentChapter = null;
         let currentQuestionIndex = 0;
         let userAnswers = {};
-        let doubtedAnswers = {}; // { questionIndex: true/false }
+        let doubtedAnswers = {};
         let showOverview = false;
 
-        // --- SVG ICONS ---
+        const subjectConfig = {
+            "PAI Kelas 11":        { color: "emerald", icon: "", desc: "Bab 6 – Bab 10" },
+            "Bahasa Indonesia XI": { color: "blue",    icon: "", desc: "30 Soal Pilihan Ganda" }
+        };
+
         const icons = {
             book: `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 opacity-90"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
             chevronRight: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`,
@@ -167,7 +207,6 @@
             doubt: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
         };
 
-        // --- LOGIC FORMAT TEKS ARAB ---
         function formatText(text) {
             return text.split('\n').map(line => {
                 if (line.trim() === '') return '<br/>';
@@ -179,42 +218,91 @@
             }).join('');
         }
 
-        // --- RENDER MENU UTAMA ---
-        function renderMenu() {
+        function renderHome() {
+            currentSubject = null;
             currentChapter = null;
-            let chapterListHTML = Object.keys(quizData).map(chapter => `
-        <button onclick="startQuiz('${chapter}')" class="group flex items-center justify-between p-4 bg-white border-2 border-slate-100 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all text-left w-full">
-            <div>
-                <h3 class="font-bold text-gray-800 group-hover:text-emerald-600 transition-colors">${chapter}</h3>
-                <p class="text-sm text-gray-500">${quizData[chapter].length} Soal</p>
-            </div>
-            <span class="text-gray-300 group-hover:text-emerald-500">${icons.chevronRight}</span>
-        </button>
-    `).join('');
+            const subjectCards = Object.keys(quizData).map(subject => {
+                const cfg = subjectConfig[subject];
+                const totalSoal = Object.values(quizData[subject]).reduce((s, arr) => s + arr.length, 0);
+                const totalBab  = Object.keys(quizData[subject]).length;
+                return `
+                <button onclick="renderMenu('${subject}')" class="group relative flex flex-col items-start p-6 bg-white border-2 border-slate-100 rounded-2xl hover:border-${cfg.color}-400 hover:shadow-lg transition-all text-left w-full overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-${cfg.color}-50 rounded-bl-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                    <h3 class="font-bold text-lg text-gray-800 group-hover:text-${cfg.color}-600 transition-colors">${subject}</h3>
+                    <p class="text-sm text-gray-400 mt-1">${cfg.desc}</p>
+                    <div class="flex items-center gap-3 mt-4">
+                        <span class="text-xs font-semibold bg-${cfg.color}-100 text-${cfg.color}-700 px-2 py-1 rounded-full">${totalBab} Bab/Topik</span>
+                        <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded-full">${totalSoal} Soal</span>
+                    </div>
+                    <span class="absolute bottom-4 right-4 text-gray-200 group-hover:text-${cfg.color}-400 transition-colors">${icons.chevronRight}</span>
+                </button>`;
+            }).join('');
 
             document.getElementById('app').innerHTML = `
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border-t-4 border-emerald-600">
-                <div class="bg-emerald-600 p-8 text-center text-white">
-                    ${icons.book}
-                    <h1 class="text-3xl font-bold mb-2">Aplikasi Ujian PAI</h1>
-                    <p class="text-emerald-100">Pendidikan Agama Islam Kelas 11</p>
-                </div>
-                <div class="p-8">
-                    <h2 class="text-xl font-semibold mb-6 text-gray-800 flex items-center">
-                        <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3">📚</span>
-                        Pilih Bab Ujian
-                    </h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        ${chapterListHTML}
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border-t-4 border-slate-700">
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-700 p-8 text-center text-white">
+                        ${icons.book}
+                        <h1 class="text-3xl font-bold mb-2">Aplikasi CBT</h1>
+                        <p class="text-slate-300">Computer Based Test — Kelas 11</p>
+                    </div>
+                    <div class="p-8">
+                        <h2 class="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                            <span class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            </span>
+                            Pilih Mata Pelajaran
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            ${subjectCards}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    `;
+            </div>`;
         }
 
-        // --- RENDER KUIS ---
+        function renderMenu(subject) {
+            currentSubject = subject;
+            currentChapter = null;
+            const cfg = subjectConfig[subject];
+            const chapters = quizData[subject];
+
+            const chapterListHTML = Object.keys(chapters).map(chapter => `
+                <button onclick="startQuiz('${chapter}')" class="group flex items-center justify-between p-4 bg-white border-2 border-slate-100 rounded-xl hover:border-${cfg.color}-400 hover:shadow-md transition-all text-left w-full">
+                    <div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-${cfg.color}-600 transition-colors">${chapter}</h3>
+                        <p class="text-sm text-gray-500">${chapters[chapter].length} Soal</p>
+                    </div>
+                    <span class="text-gray-300 group-hover:text-${cfg.color}-400">${icons.chevronRight}</span>
+                </button>`).join('');
+
+            document.getElementById('app').innerHTML = `
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border-t-4 border-${cfg.color}-600">
+                    <div class="bg-${cfg.color}-600 p-8 text-center text-white">
+                        <h1 class="text-2xl font-bold mb-1">${subject}</h1>
+                        <p class="text-${cfg.color}-100 text-sm">${cfg.desc}</p>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                                <span class="w-8 h-8 rounded-full bg-${cfg.color}-100 text-${cfg.color}-600 flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+                                </span>
+                                Pilih Topik Ujian
+                            </h2>
+                            <button onclick="renderHome()" class="text-sm text-gray-400 hover:text-gray-700 flex items-center gap-1 font-medium">
+                                ${icons.home} <span class="ml-1">Beranda</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            ${chapterListHTML}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
         function startQuiz(chapter) {
             currentChapter = chapter;
             currentQuestionIndex = 0;
@@ -222,6 +310,10 @@
             doubtedAnswers = {};
             showOverview = false;
             renderQuestion();
+        }
+
+        function currentQuestions() {
+            return quizData[currentSubject][currentChapter];
         }
 
         function selectOption(index) {
@@ -251,7 +343,7 @@
         }
 
         function nextQuestion() {
-            if (currentQuestionIndex < quizData[currentChapter].length - 1) {
+            if (currentQuestionIndex < currentQuestions().length - 1) {
                 currentQuestionIndex++;
                 renderQuestion();
             }
@@ -265,7 +357,7 @@
         }
 
         function renderQuestion() {
-            const questions = quizData[currentChapter];
+            const questions = currentQuestions();
             const q = questions[currentQuestionIndex];
             const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
             const isDoubted = doubtedAnswers[currentQuestionIndex];
@@ -294,7 +386,6 @@
                 ? `<button onclick="renderResult()" class="flex items-center px-6 py-3 rounded-xl font-bold bg-emerald-600 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-colors">Selesai ${icons.check}</button>`
                 : `<button onclick="nextQuestion()" class="flex items-center px-6 py-3 rounded-xl font-semibold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors">Selanjutnya ${icons.chevronRight}</button>`;
 
-            // Overview panel HTML
             let overviewHTML = '';
             if (showOverview) {
                 const answeredCount = Object.keys(userAnswers).length;
@@ -316,20 +407,15 @@
                             <h3 class="text-lg font-bold text-gray-800">Semua Soal — ${currentChapter}</h3>
                             <button onclick="closeOverview()" class="text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
                         </div>
-
-                        <!-- Legend -->
                         <div class="flex flex-wrap gap-3 mb-5 text-xs font-medium">
                             <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-emerald-200 border border-emerald-400 inline-block"></span>Dijawab (${answeredCount})</span>
                             <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-amber-200 border border-amber-400 inline-block"></span>Ragu (${doubtedCount})</span>
                             <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-gray-100 border border-gray-300 inline-block"></span>Belum (${unansweredCount})</span>
                             <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-emerald-600 inline-block"></span>Sekarang</span>
                         </div>
-
-                        <!-- Badges grid -->
                         <div class="flex flex-wrap gap-2 mb-5">
                             ${badgesHTML}
                         </div>
-
                         <button onclick="renderResult()" class="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors">
                             Selesai & Lihat Hasil
                         </button>
@@ -340,15 +426,13 @@
             document.getElementById('app').innerHTML = `
         <div class="flex flex-col items-center py-6 px-4 min-h-screen">
             <div class="w-full max-w-3xl flex-1 flex flex-col fade-in">
-                <!-- Header -->
                 <div class="flex items-center justify-between mb-4">
-                    <button onclick="renderMenu()" class="flex items-center text-gray-500 hover:text-emerald-600 font-medium bg-white px-4 py-2 rounded-full shadow-sm border">
+                    <button onclick="renderMenu(currentSubject)" class="flex items-center text-gray-500 hover:text-gray-800 font-medium bg-white px-4 py-2 rounded-full shadow-sm border">
                         <span class="mr-2">${icons.home}</span> Keluar
                     </button>
-                    <div class="font-bold text-emerald-700 bg-emerald-100 px-4 py-2 rounded-full">
+                    <div class="font-bold text-slate-700 bg-slate-100 px-4 py-2 rounded-full text-sm text-center max-w-[160px] truncate">
                         ${currentChapter}
                     </div>
-                    <!-- Tombol Daftar Soal di Header -->
                     <button onclick="openOverview()" class="flex items-center gap-2 px-4 py-2 rounded-full font-semibold bg-white text-slate-600 hover:bg-slate-100 transition-colors text-sm shadow-sm border border-slate-200">
                         ${icons.grid}
                         <span class="hidden sm:inline">Daftar Soal</span>
@@ -356,7 +440,6 @@
                     </button>
                 </div>
 
-                <!-- Progress Bar + nomor soal -->
                 <div class="flex items-center gap-3 mb-8">
                     <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div class="bg-emerald-500 h-2 rounded-full transition-all duration-300 ease-out" style="width: ${progress}%"></div>
@@ -364,20 +447,17 @@
                     <span class="text-xs font-medium text-gray-400 whitespace-nowrap">${currentQuestionIndex + 1} / ${questions.length}</span>
                 </div>
 
-                <!-- Question Card -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6 flex-1 border border-gray-100">
                     <div class="mb-8">${formatText(q.question)}</div>
                     <div class="space-y-3">${optionsHTML}</div>
                 </div>
 
-                <!-- Navigation Buttons (Sebelumnya | Ragu-ragu | Selanjutnya) -->
                 <div class="flex items-center justify-between mt-auto pt-2 gap-2">
                     <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''} 
                         class="flex items-center px-5 py-3 rounded-xl font-semibold transition-colors flex-shrink-0 ${currentQuestionIndex === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 shadow-sm hover:bg-gray-50 border border-gray-200'}">
                         <span class="mr-1">${icons.chevronLeft}</span> <span class="hidden sm:inline">Sebelumnya</span>
                     </button>
 
-                    <!-- Tombol Ragu-ragu bergaya checkbox pill -->
                     <button onclick="toggleDoubt()" class="flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2 flex-shrink-0
                         ${isDoubted
                             ? 'bg-amber-50 text-amber-700 border-amber-400'
@@ -397,9 +477,8 @@
     `;
         }
 
-        // --- RENDER HASIL & REVIEW ---
         function renderResult() {
-            const questions = quizData[currentChapter];
+            const questions = currentQuestions();
             let score = 0;
 
             let reviewHTML = questions.map((q, qIndex) => {
@@ -434,7 +513,7 @@
 
                 if (isCorrect) score++;
 
-                const doubtBadge = isDoubted ? `<span class="ml-2 text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full">⚠️ Ragu</span>` : '';
+                const doubtBadge = isDoubted ? `<span class="ml-2 text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full">Ragu</span>` : '';
 
                 return `
             <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 ${isCorrect ? 'border-emerald-500' : 'border-red-500'} mb-4 border-t border-r border-b">
@@ -450,7 +529,7 @@
                         <div class="mt-4">
                             ${optionsReviewHTML}
                         </div>
-                        ${isUnanswered ? `<p class="mt-3 text-sm text-amber-600 font-medium flex items-center">⚠️ Anda tidak menjawab soal ini.</p>` : ''}
+                        ${isUnanswered ? `<p class="mt-3 text-sm text-amber-600 font-medium flex items-center">Anda tidak menjawab soal ini.</p>` : ''}
                     </div>
                 </div>
             </div>
@@ -462,7 +541,6 @@
             document.getElementById('app').innerHTML = `
         <div class="py-8 px-4 min-h-screen">
             <div class="max-w-3xl mx-auto fade-in">
-                <!-- Result Header -->
                 <div class="bg-white rounded-2xl shadow-lg p-8 text-center mb-6 border-t-4 border-emerald-600">
                     ${icons.award}
                     <h2 class="text-3xl font-bold text-gray-800 mb-2">Hasil Ujian ${currentChapter}</h2>
@@ -470,18 +548,18 @@
                     <p class="text-gray-600 font-medium text-lg mb-8">
                         Benar ${score} dari ${questions.length} Soal
                     </p>
-                    
                     <div class="flex justify-center gap-4 flex-wrap">
                         <button onclick="startQuiz('${currentChapter}')" class="flex items-center px-6 py-3 bg-emerald-100 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-200 transition-colors">
                             <span class="mr-2 w-5 h-5">${icons.rotate}</span> Ulangi Kuis
                         </button>
-                        <button onclick="renderMenu()" class="flex items-center px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors">
-                            <span class="mr-2 w-5 h-5">${icons.home}</span> Menu Utama
+                        <button onclick="renderMenu(currentSubject)" class="flex items-center px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors">
+                            <span class="mr-2 w-5 h-5">${icons.home}</span> Pilih Topik
+                        </button>
+                        <button onclick="renderHome()" class="flex items-center px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors">
+                            <span class="mr-2 w-5 h-5">${icons.book}</span> Beranda
                         </button>
                     </div>
                 </div>
-
-                <!-- Review Section -->
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 px-2 mb-4">Review Jawaban:</h3>
                     ${reviewHTML}
@@ -492,9 +570,7 @@
             window.scrollTo(0, 0);
         }
 
-        // Inisialisasi Aplikasi Pertama Kali
-        renderMenu();
-
+        renderHome();
     </script>
 </body>
 
